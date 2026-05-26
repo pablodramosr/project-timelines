@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CSE + Debiasing DR — Gantt Chart</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 13px; background: #fff; color: #1a1a1a; padding: 24px; }
+  h1 { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+  .subtitle { font-size: 12px; color: #666; margin-bottom: 20px; }
+  .legend { display: flex; flex-wrap: wrap; gap: 14px; margin-bottom: 20px; }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: #444; }
+  .legend-dot { width: 12px; height: 12px; border-radius: 3px; flex-shrink: 0; }
+  .legend-diamond { width: 11px; height: 11px; background: #f0c040; border: 1.5px solid #cca000; transform: rotate(45deg); flex-shrink: 0; }
+  table { border-collapse: collapse; width: 100%; table-layout: fixed; }
+  thead th { font-size: 11px; font-weight: 600; color: #555; text-align: center; padding: 4px 2px; border-bottom: 1px solid #e0e0e0; background: #fafafa; }
+  thead th.task-col { text-align: left; padding-left: 8px; }
+  thead th.month-header { border-left: 1px solid #ddd; }
+  tbody tr:hover { background: #f7f7f7; }
+  tbody tr.group-row { background: #f0f0f0; }
+  tbody tr.group-row td { font-weight: 600; font-size: 12px; color: #333; padding: 5px 8px; border-top: 1px solid #ddd; }
+  tbody td.task-cell { padding: 4px 8px; font-size: 12px; color: #333; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  tbody td.week-cell { padding: 2px; }
+  tr { height: 24px; }
+  .note { font-size: 11px; color: #777; margin-top: 16px; border-top: 1px solid #eee; padding-top: 10px; line-height: 1.6; }
+  .note strong { color: #333; font-style: normal; }
+  .diamond { width: 11px; height: 11px; background: #f0c040; border: 1.5px solid #cca000; transform: rotate(45deg); margin: auto; }
+</style>
+</head>
+<body>
+
+<h1>CSE Program + Debiasing Intervention — Dominican Republic</h1>
+<p class="subtitle">PIs: Carolina Concha-Arriagada, Guthrie Gray-Lobe, Nina Buchmann, Sebastian Otero, Michael Kremer &nbsp;|&nbsp; Updated: June 2026</p>
+
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot" style="background:#4a90d9"></div>IRB</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#7b5ea7"></div>AI chatbot / web platform</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#3aaa6e"></div>Session prep</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#e8903a"></div>Implementation</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#e24b4a"></div>Data collection</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#888"></div>Analysis / reports</div>
+  <div class="legend-item"><div class="legend-diamond"></div>Key decision / one-time event</div>
+</div>
+
+<div style="overflow-x: auto;">
+<table>
+<thead>
+<tr>
+  <th class="task-col" style="width:245px; min-width:245px;">Task</th>
+  <!-- w0 = May 26 w4 (last week of May) — one pre-column -->
+  <th class="month-header" colspan="1" style="width:20px; font-size:10px;">May 26</th>
+  <th class="month-header" colspan="4" style="width:80px;">Jun 26</th>
+  <th class="month-header" colspan="4" style="width:80px;">Jul 26</th>
+  <th class="month-header" colspan="4" style="width:80px;">Aug 26</th>
+  <th class="month-header" colspan="4" style="width:80px;">Sep 26</th>
+  <th class="month-header" colspan="4" style="width:80px;">Oct 26</th>
+  <th class="month-header" colspan="4" style="width:80px;">Nov 26</th>
+  <th class="month-header" colspan="4" style="width:80px;">Dec 26</th>
+  <th class="month-header" colspan="4" style="width:80px;">Jan 27</th>
+  <th class="month-header" colspan="4" style="width:80px;">Feb 27</th>
+  <th class="month-header" colspan="4" style="width:80px;">Mar 27</th>
+  <th class="month-header" colspan="4" style="width:80px;">Apr 27</th>
+  <th class="month-header" colspan="4" style="width:80px;">May 27</th>
+  <th class="month-header" colspan="2" style="width:40px;">Jun 27</th>
+</tr>
+<tr>
+  <th class="task-col"></th>
+  <th style="font-size:10px;">w4</th>
+  <th>1</th><th>2</th><th>3</th><th>4</th>
+  <th>1</th><th>2</th><th>3</th><th>4</th>
+  <th>1</th><th>2</th><th>3</th><th>4</th>
+  <th>1</th><th>2</th><th>3</th><th>4</th>
+  <th>1</th><th>2</th><th>3</th><th>4</th>
+  <th>1</th><th>2</th><th>3</th><th>4</th>
+  <th>1</th><th>2</th><th>3</th><th>4</th>
+  <th>1</th><th>2</th><th>3</th><th>4</th>
+  <th>1</th><th>2</th><th>3</th><th>4</th>
+  <th>1</th><th>2</th><th>3</th><th>4</th>
+  <th>1</th><th>2</th><th>3</th><th>4</th>
+  <th>1</th><th>2</th><th>3</th><th>4</th>
+  <th>1</th><th>2</th>
+</tr>
+</thead>
+<tbody id="gantt-body"></tbody>
+</table>
+</div>
+
+<div class="note">
+  <strong>⚠️ Key constraints:</strong><br>
+  • Carolina–MINERD meeting moved to <strong>last week of May</strong> so contract can be signed immediately after, enabling Phase 1 to start Jun w1.<br>
+  • Standalone chatbot pilot compressed to <strong>1 week</strong> to fit Phase 4 completion by end of July — at least 1 month before September program start.<br>
+  • IRB drafting starts same week as contracting (Jun w1); target approval end of August with ~2 months review.<br>
+  • <em>No slack in the chatbot timeline — any delay in the MINERD meeting or contracting pushes Phase 4 into September.</em>
+</div>
+
+<script>
+// Week index: w0 = May w4, w1 = Jun w1, w2 = Jun w2 ... w5 = Jul w1 ... w9 = Aug w1
+// w13 = Sep w1 (program starts), w17 = Oct w1, w21 = Nov w1, w25 = Dec w1
+// w29 = Jan 27 w1, w33 = Feb w1, w37 = Mar w1, w41 = Apr w1, w45 = May w1, w49 = Jun 27 w1
+// Total columns: 1 (May w4) + 48 (Jun–May 4w each) + 2 (Jun 27 w1-2) = 51
+
+const WEEKS_TOTAL = 51;
+
+function row(label, color, s, e, isGroup, isMilestone, note) {
+  return { label, color: color||null, startWeek: s, endWeek: e,
+           isGroup: !!isGroup, isMilestone: !!isMilestone, note: note||'' };
+}
+
+const IRB='#4a90d9', CHAT='#7b5ea7', SESS='#3aaa6e', IMPL='#e8903a', DATA='#e24b4a', ANA='#888';
+
+// w0=May-w4 | w1=Jun-w1 | w5=Jul-w1 | w9=Aug-w1 | w13=Sep-w1 | w17=Oct-w1
+// w21=Nov-w1 | w25=Dec-w1 | w29=Jan27-w1 | w33=Feb-w1 | w37=Mar-w1
+// w41=Apr-w1 | w45=May-w1 | w49=Jun27-w1
+
+const tasks = [
+  row('0. IRB', null, null, null, true),
+  row('Carolina–MINERD meeting (chatbot go/no-go)', null, 0, 0, false, true,
+      'Moved to last week of May — prerequisite for IRB submission and chatbot contracting'),
+  row('IRB drafting and submission', IRB, 1, 4, false, false,
+      'Starts immediately after MINERD go-ahead'),
+  row('IRB review (~2 months) — target: end of Aug', IRB, 5, 12),
+
+  row('1. AI Chatbot & Web Platform', null, null, null, true),
+  row('Consultant selection and contracting', CHAT, 1, 2, false, false,
+      'Contract signed immediately after MINERD meeting'),
+  row('Phase 1: platform audit (~2 weeks)', CHAT, 3, 4),
+  row('Phase 2: standalone chatbot build + QA (~5 weeks)', CHAT, 5, 9),
+  row('Standalone chatbot pilot — compressed to 1 week', CHAT, 10, 10, false, false,
+      'Compressed from open-ended to 1 week to meet September deadline'),
+  row('Go-ahead for platform integration', null, 11, 11, false, true,
+      'Research team decision — must happen by Jul w3 to keep Phase 4 in July'),
+  row('Phase 3: platform integration (~5 weeks)', CHAT, 12, 16),
+  row('Phase 4: production launch + handover (~2 weeks)', CHAT, 17, 18, false, false,
+      '⚠️ Must complete by end of July (w18) — 1 month before Sep program start'),
+  row('Phase 5: support period (through Dec 15, 2026)', CHAT, 19, 29),
+
+  row('2. Session Preparation', null, null, null, true),
+  row('School randomization', SESS, 9, 10),
+  row('Coordinate and schedule trainings', SESS, 9, 12),
+  row('Remote teacher training', SESS, 11, 14),
+  row('Training completion monitoring', SESS, 13, 16),
+  row('Field monitor training', SESS, 13, 16),
+  row('Field monitor coordination', SESS, 13, 16),
+
+  row('3. Program Implementation', null, null, null, true),
+  row('CSE program implementation', IMPL, 13, 45),
+  row('Debiasing intervention implementation', IMPL, 13, 45),
+  row('Field visit 1 — materials delivery', IMPL, 13, 14),
+  row('Field visit 2 — compliance monitoring', IMPL, 21, 22),
+  row('Field visit 3 — completion verification', IMPL, 41, 42),
+
+  row('4. Data Collection', null, null, null, true),
+  row('Survey instrument development', DATA, 29, 36),
+  row('Survey instrument piloting', DATA, 37, 40),
+  row('Midline enumerator training', DATA, 41, 44),
+  row('Midline data collection (May 2027)', DATA, 45, 51),
+
+  row('5. Analysis & Reports', null, null, null, true),
+  row('Midline data cleaning and analysis', ANA, 49, 51),
+];
+
+const tbody = document.getElementById('gantt-body');
+
+// Month boundary weeks (first col of each month, 0-indexed)
+// May-w4=0, Jun=1,2,3,4, Jul=5,6,7,8, Aug=9,10,11,12, Sep=13...
+// Month boundaries at: 0(May), 1(Jun), 5(Jul), 9(Aug), 13(Sep), 17(Oct), 21(Nov), 25(Dec),
+//                      29(Jan), 33(Feb), 37(Mar), 41(Apr), 45(May27), 49(Jun27)
+const monthStarts = new Set([0, 1, 5, 9, 13, 17, 21, 25, 29, 33, 37, 41, 45, 49]);
+
+tasks.forEach(t => {
+  const tr = document.createElement('tr');
+  if (t.isGroup) {
+    tr.className = 'group-row';
+    tr.innerHTML = `<td colspan="${WEEKS_TOTAL + 1}">${t.label}</td>`;
+    tbody.appendChild(tr);
+    return;
+  }
+
+  const tip = t.note ? ` title="${t.note}"` : '';
+  const star = (t.note && !t.isMilestone) ? ' <span style="color:#e24b4a;font-size:10px;">*</span>' : '';
+  let cells = `<td class="task-cell"${tip} style="width:245px;min-width:245px;">${t.label}${star}</td>`;
+
+  for (let w = 0; w < WEEKS_TOTAL; w++) {
+    const atMonthBoundary = monthStarts.has(w);
+    const bl = atMonthBoundary ? 'border-left:1px solid #e8e8e8;' : '';
+
+    if (t.isMilestone && w === t.startWeek) {
+      const fullTip = t.label + (t.note ? ' — ' + t.note : '');
+      cells += `<td class="week-cell" style="${bl}vertical-align:middle;" title="${fullTip}">
+                  <div class="diamond"></div></td>`;
+    } else if (!t.isMilestone && t.startWeek !== null && w >= t.startWeek && w <= t.endWeek) {
+      const rs = w === t.startWeek, re = w === t.endWeek;
+      const rad = `${rs?'3px':'0'} ${re?'3px':'0'} ${re?'3px':'0'} ${rs?'3px':'0'}`;
+      cells += `<td class="week-cell" style="${bl}padding:4px 0;">
+                  <div style="height:14px;background:${t.color};border-radius:${rad};opacity:0.85;"></div></td>`;
+    } else {
+      cells += `<td class="week-cell" style="${bl}"></td>`;
+    }
+  }
+
+  tr.innerHTML = cells;
+  tbody.appendChild(tr);
+});
+</script>
+</body>
+</html>
