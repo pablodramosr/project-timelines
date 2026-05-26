@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chat2Learn Peru — Project Timeline</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #f7f6f2;
+  --surface: #ffffff;
+  --border: #e2e0d8;
+  --text: #1a1a1a;
+  --muted: #888;
+  --light: #bbb;
+  --label-w: 270px;
+  --row-h: 34px;
+  --col-w: 21px;
+  --c-prep:   #2d7d9a;
+  --c-impl:   #27ae60;
+  --c-data:   #e67e22;
+  --c-follow: #8e44ad;
+  --c-irb:    #e74c3c;
+  --c-prep-l:   #d4ecf7;
+  --c-impl-l:   #d5f5e3;
+  --c-data-l:   #fdebd0;
+  --c-follow-l: #e8daef;
+  --c-irb-l:    #fde8e6;
+  --c-prep-d:   #a8cdd8;
+  --c-impl-d:   #a9dbbf;
+  --c-data-d:   #f0c89a;
+  --c-follow-d: #c7b3d5;
+}
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 13px;
+}
+
+.page-header {
+  background: var(--surface);
+  border-bottom: 2px solid var(--border);
+  padding: 22px 28px 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+}
+.page-header h1 {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.4px;
+  margin-bottom: 5px;
+}
+.page-header .sub {
+  font-size: 11.5px;
+  color: var(--muted);
+  line-height: 1.7;
+}
+.page-header .sub b { color: var(--text); font-weight: 500; }
+.chip {
+  background: var(--c-impl);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  padding: 6px 14px;
+  border-radius: 4px;
+  flex-shrink: 0;
+  margin-top: 4px;
+}
+
+.controls {
+  padding: 12px 28px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);
+}
+.ctrl-lbl { font-size: 11px; color: var(--light); margin-right: 4px; }
+.toggle-btn {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 5px 14px;
+  border-radius: 4px;
+  border: 1.5px solid var(--border);
+  background: var(--surface);
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.toggle-btn.on {
+  background: var(--text);
+  color: #fff;
+  border-color: var(--text);
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px 18px;
+  padding: 10px 28px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  font-size: 11.5px;
+  color: var(--muted);
+  align-items: center;
+}
+.li { display: flex; align-items: center; gap: 5px; }
+.lb { width: 22px; height: 9px; border-radius: 2px; flex-shrink: 0; }
+.ld { width: 9px; height: 9px; transform: rotate(45deg); background: #1a1a1a; flex-shrink: 0; }
+.ld.done { opacity: 0.35; }
+.ld.risk { background: var(--c-irb); }
+.sep { color: var(--border); }
+
+/* ── GANTT WRAPPER ── */
+#view-detailed { overflow-x: auto; padding: 18px 28px 36px; }
+#view-summary  { display: none; overflow-x: auto; padding: 18px 28px 36px; }
+
+/* ── SHARED TABLE STYLES ── */
+.gtable {
+  border-collapse: collapse;
+  min-width: max-content;
+}
+
+/* Month header row */
+.gtable .mrow th {
+  background: var(--surface);
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--muted);
+  text-align: center;
+  padding: 8px 4px 3px;
+  border-right: 1px solid var(--border);
+  border-bottom: none;
+}
+.gtable .mrow th.lc {
+  text-align: left;
+  background: var(--bg);
+  border-right: 2px solid var(--border);
+  padding-left: 0;
+}
+
+/* Week header row */
+.gtable .wrow th {
+  background: var(--surface);
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  color: var(--light);
+  text-align: center;
+  padding: 2px 0 5px;
+  border-right: 1px solid #eeecea;
+  width: var(--col-w);
+  min-width: var(--col-w);
+}
+.gtable .wrow th.lc {
+  background: var(--bg);
+  border-right: 2px solid var(--border);
+  width: var(--label-w);
+  min-width: var(--label-w);
+}
+.gtable .wrow th.ms { border-left: 1px solid var(--border); }
+
+/* Phase header row */
+.gtable .prow td {
+  background: var(--bg);
+  padding: 10px 0 3px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--muted);
+  border-bottom: none;
+}
+.gtable .prow td.lc { padding-left: 0; }
+
+/* Task row */
+.gtable .trow td {
+  height: var(--row-h);
+  border-bottom: 1px solid #f0efe9;
+  vertical-align: middle;
+  background: var(--surface);
+}
+.gtable .trow:hover td { background: #f4f3ef !important; }
+
+.gtable .trow td.lc {
+  width: var(--label-w);
+  min-width: var(--label-w);
+  padding-right: 10px;
+  border-right: 2px solid var(--border);
+  background: var(--bg) !important;
+  position: sticky;
+  left: 0;
+  z-index: 10;
+}
+.tname {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--text);
+  white-space: nowrap;
+}
+.tname.done { color: #999; }
+.chk { color: var(--c-impl); font-size: 10px; }
+.star { color: var(--c-irb); font-size: 10px; font-weight: 700; }
+
+/* Grid cells */
+.gtable td.gc {
+  width: var(--col-w);
+  min-width: var(--col-w);
+  border-right: 1px solid #f0efe9;
+  position: relative;
+  background: var(--surface);
+}
+.gtable td.gc.ms { border-left: 1px solid var(--border); }
+
+/* Bar */
+.bar {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 19px;
+  border-radius: 3px;
+  overflow: hidden;
+}
+.bar .fill {
+  position: absolute;
+  top: 0; left: 0; bottom: 0;
+  border-radius: 3px 0 0 3px;
+}
+.bar .fill.full { border-radius: 3px; width: 100%; }
+.bar .pct {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  font-weight: 500;
+  color: #fff;
+  white-space: nowrap;
+  z-index: 2;
+  pointer-events: none;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.35);
+}
+
+/* Diamond */
+.dmd {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 11px; height: 11px;
+  transform: translate(-50%, -50%) rotate(45deg);
+  background: #1a1a1a;
+  z-index: 3;
+  cursor: help;
+}
+.dmd.done { opacity: 0.35; }
+.dmd.risk { background: var(--c-irb); }
+
+/* Tooltip */
+[data-tip] { position: relative; cursor: help; }
+[data-tip]::after {
+  content: attr(data-tip);
+  display: none;
+  position: absolute;
+  bottom: calc(100% + 7px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: #1a1a1a;
+  color: #fff;
+  font-size: 11px;
+  font-family: 'DM Sans', sans-serif;
+  line-height: 1.55;
+  padding: 8px 11px;
+  border-radius: 5px;
+  white-space: pre-wrap;
+  max-width: 230px;
+  z-index: 200;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+  pointer-events: none;
+}
+[data-tip]:hover::after { display: block; }
+
+/* ── SUMMARY SPECIFIC ── */
+.smtable thead th {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--muted);
+  text-align: center;
+  padding: 8px 6px 6px;
+  border-right: 1px solid var(--border);
+  background: var(--surface);
+  min-width: 58px;
+}
+.smtable thead th.lc {
+  text-align: left;
+  min-width: 200px;
+  border-right: 2px solid var(--border);
+  background: var(--bg);
+  padding-left: 0;
+}
+.smtable tbody td {
+  height: 36px;
+  border-bottom: 1px solid #f0efe9;
+  border-right: 1px solid #f0efe9;
+  position: relative;
+  min-width: 58px;
+  background: var(--surface);
+  vertical-align: middle;
+}
+.smtable tbody td.lc {
+  font-size: 12px;
+  font-weight: 500;
+  padding-right: 10px;
+  white-space: nowrap;
+  border-right: 2px solid var(--border);
+  background: var(--bg);
+}
+.smtable tbody tr.phrow td { background: var(--bg); }
+.smtable tbody tr.phrow td.lc {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--muted);
+  padding-top: 11px;
+}
+.sbar {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 20px;
+  border-radius: 3px;
+}
+.futurecol {
+  background: #f9f8f4 !important;
+  border-left: 2px dashed var(--border) !important;
+  min-width: 80px !important;
+}
+
+/* ── FOOTNOTES ── */
+.footnotes {
+  padding: 18px 28px 40px;
+  border-top: 1px solid var(--border);
+  font-size: 11.5px;
+  color: var(--muted);
+  line-height: 1.85;
+  max-width: 800px;
+}
+.footnotes h3 {
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--light);
+  margin-bottom: 9px;
+}
+.fn-warn { color: var(--c-irb); font-weight: 500; }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <div>
+    <h1>Chat2Learn Peru &mdash; Project Timeline</h1>
+    <div class="sub">
+      <b>Evaluation of Chat2Learn in Fe y Alegr&iacute;a schools</b><br>
+      PIs: Guthrie Gray-Lobe &middot; Ariel Kalil &middot; Michael Kremer &middot; Stephanie Majerowicz &middot; Maria Adelaida Mart&iacute;nez<br>
+      Updated: May 2026
+    </div>
+  </div>
+  <div class="chip">CHATI</div>
+</div>
+
+<div class="controls">
+  <span class="ctrl-lbl">View:</span>
+  <button class="toggle-btn on" id="btn-d" onclick="switchView('detailed')">Detailed (weekly)</button>
+  <button class="toggle-btn"    id="btn-s" onclick="switchView('summary')">Summary (monthly)</button>
+</div>
+
+<div class="legend">
+  <div class="li"><div class="lb" style="background:var(--c-prep)"></div> Preparation</div>
+  <div class="li"><div class="lb" style="background:var(--c-impl)"></div> Implementation</div>
+  <div class="li"><div class="lb" style="background:var(--c-data)"></div> Data Collection</div>
+  <div class="li"><div class="lb" style="background:var(--c-follow)"></div> Long-run Follow-up</div>
+  <span class="sep">|</span>
+  <div class="li"><div class="lb" style="background:var(--c-irb);opacity:0.75"></div> IRB (under review &mdash; risk of delay)</div>
+  <span class="sep">|</span>
+  <div class="li"><div class="ld"></div> Milestone</div>
+  <div class="li"><div class="ld done"></div> Completed milestone</div>
+  <div class="li"><div class="ld risk"></div> At-risk milestone</div>
+  <span class="sep">|</span>
+  <div class="li"><span class="star">*</span> Note on hover</div>
+  <div class="li"><span class="chk">&#10003;</span> Completed task</div>
+  <div class="li">
+    <div style="display:flex;gap:0;align-items:center">
+      <div style="width:14px;height:9px;border-radius:2px 0 0 2px;background:var(--c-prep)"></div>
+      <div style="width:8px;height:9px;border-radius:0 2px 2px 0;background:var(--c-prep-l)"></div>
+    </div>
+    &nbsp;% progress
+  </div>
+</div>
+
+<div id="view-detailed"></div>
+<div id="view-summary"></div>
+
+<div class="footnotes">
+  <h3>Key notes &amp; dependencies</h3>
+  <p class="fn-warn">&#9888; Both IRBs (UChicago and IEP) are currently under review. Approval of both is required before the program can start. A delay could push randomization and the Chat2Learn launch past the second week of June.</p>
+  <p>&bull; Randomization is contingent on: (1) close of family registration, (2) digitization and cleaning of paper consent forms, and (3) IRB approval from both committees.</p>
+  <p>&bull; WhatsApp audio tasks at endline are administered to a subsample of caregivers; phone surveys cover a broader sample.</p>
+  <p>&bull; ECE Grade 2 data corresponds to the 2027 national standardized assessment. SIAGIE data will be collected continuously through 2030.</p>
+  <p>&bull; The Chat2Learn program period is approximately 4.5 months (mid-June to end of October 2026).</p>
+</div>
+
+<script>
+// ─── TASK DATA ───────────────────────────────────────────
+// Edit pct (0-100) to update progress bars
+var TASKS = [
+  // PHASE 1 — Preparation
+  { phase:"Preparation", label:"UChicago / Fe y Alegria agreements", start:"2026-02-02", end:"2026-03-13", color:"prep", pct:100, note:"Framework agreement between University of Chicago and Asociacion Fe y Alegria del Peru." },
+  { phase:"Preparation", label:"Cultural adaptation (focus groups Lima)", start:"2026-03-02", end:"2026-03-27", color:"prep", pct:100, note:"Focus groups with FyA teachers and parents in Lima, March 2026. Images, tone adapted; 'Chati' mascot created." },
+  { phase:"Preparation", label:"Teacher training", start:"2026-03-02", end:"2026-03-20", color:"prep", pct:100, note:"Teachers trained on Chat2Learn and the family enrollment process. First half of March." },
+  { phase:"Preparation", label:"Family enrollment / WhatsApp registration", start:"2026-03-23", end:"2026-05-15", color:"prep", pct:90, note:"27 schools participated in the enrollment phase. Caregiver WhatsApp numbers collected through teachers." },
+  { phase:"Preparation", label:"Baseline characterization survey", start:"2026-04-06", end:"2026-05-22", color:"prep", pct:70, note:"Survey administered via WhatsApp. Collects child demographics and caregiver education level. Also used to stratify randomization." },
+  { phase:"Preparation", label:"IRB — UChicago (under review)*", start:"2026-05-04", end:"2026-06-12", color:"irb", pct:0, note:"WARNING: Submitted for review. Approval pending. May delay program start if not resolved before 2nd week of June." },
+  { phase:"Preparation", label:"IRB — IEP (Instituto de Estudios Peruanos, under review)*", start:"2026-05-04", end:"2026-06-12", color:"irb", pct:0, note:"WARNING: Submitted for review. Approval pending from local IEP committee. May delay program start if not resolved before 2nd week of June." },
+  { phase:"Preparation", label:"Consent form digitization and data cleaning", start:"2026-05-18", end:"2026-06-12", color:"prep", pct:0, note:"Digitization of paper consent forms and household database cleaning. Required prerequisite for randomization." },
+  { phase:"Preparation", label:"Randomization", start:"2026-06-01", end:"2026-06-12", color:"prep", pct:0, note:"50/50 random assignment to treatment and control. Stratified by classroom and caregiver education. Contingent on IRB approval and data cleaning.", milestone:true },
+
+  // PHASE 2 — Implementation
+  { phase:"Implementation", label:"Chat2Learn active (treatment group)", start:"2026-06-15", end:"2026-10-30", color:"impl", pct:0, note:"~4.5 months of Chat2Learn via WhatsApp. Up to 5 illustrated prompts per week. Control group: business as usual." },
+  { phase:"Implementation", label:"Platform engagement data collection", start:"2026-06-15", end:"2026-10-30", color:"impl", pct:0, note:"Continuous tracking: message read latency, response rate, session frequency and length." },
+
+  // PHASE 3 — Data Collection
+  { phase:"Data Collection", label:"Endline WhatsApp audio tasks (subsample)", start:"2026-10-05", end:"2026-12-18", color:"data", pct:0, note:"Child expressive language samples and caregiver-child conversation recordings. ~S/5 incentive per task. AI-assisted processing." },
+  { phase:"Data Collection", label:"Endline phone survey", start:"2026-10-05", end:"2026-12-18", color:"data", pct:0, note:"Measures parental beliefs, self-efficacy, practices, and willingness to pay (BDM mechanism). Phone modality preferred for BDM task." },
+  { phase:"Data Collection", label:"Audio processing and AI coding", start:"2026-11-02", end:"2027-01-29", color:"data", pct:0, note:"Cleaning and AI-assisted coding: word count, MLU, vocabulary diversity, conversational turns. Linkage to administrative records." },
+
+  // PHASE 4 — Long-run Follow-up
+  { phase:"Long-run Follow-up", label:"ECE Grade 2 data (language and math)", start:"2027-03-01", end:"2027-12-31", color:"follow", pct:0, note:"Evaluacion Censal de Estudiantes (ECE). Long-run outcomes in language and mathematics." },
+  { phase:"Long-run Follow-up", label:"SIAGIE data (enrollment and grade progression)", start:"2027-03-01", end:"2030-12-31", color:"follow", pct:0, note:"Ministry of Education school information system. Tracks enrollment, grade progression, and dropout 2027-2030." },
+  { phase:"Long-run Follow-up", label:"Analysis and results dissemination", start:"2027-06-01", end:"2027-12-31", color:"follow", pct:0, note:"UChicago shares evaluation results and Chat2Learn learnings with Fe y Alegria and partners." }
+];
+
+var MILESTONES = [
+  { date:"2026-02-02", label:"Project start",       done:true,  risk:false, tip:"Formal start: UChicago-FyA agreements." },
+  { date:"2026-03-02", label:"School engagement",   done:true,  risk:false, tip:"First half of March: teacher training begins, family enrollment starts." },
+  { date:"2026-06-08", label:"Randomization",       done:false, risk:true,  tip:"WARNING: Contingent on IRB approvals (UChicago + IEP). Delay possible." },
+  { date:"2026-06-15", label:"Program launch",      done:false, risk:false, tip:"Chat2Learn begins for treatment group (mid-June)." },
+  { date:"2026-10-30", label:"End of program",      done:false, risk:false, tip:"End of ~4.5-month Chat2Learn period. Endline data collection begins." },
+  { date:"2027-01-01", label:"Results 2027",        done:false, risk:false, tip:"UChicago shares evaluation findings with partners." }
+];
+
+// ─── COLOR MAP ───────────────────────────────────────────
+var COL = {
+  prep:   { s:"#2d7d9a", l:"#d4ecf7", d:"#a8cdd8" },
+  impl:   { s:"#27ae60", l:"#d5f5e3", d:"#a9dbbf" },
+  data:   { s:"#e67e22", l:"#fdebd0", d:"#f0c89a" },
+  follow: { s:"#8e44ad", l:"#e8daef", d:"#c7b3d5" },
+  irb:    { s:"#e74c3c", l:"#fde8e6", d:"#f0b3ae" }
+};
+
+// ─── DATE UTILS ──────────────────────────────────────────
+function pd(s) {
+  var p = s.split('-');
+  return new Date(+p[0], +p[1]-1, +p[2]);
+}
+
+// Build weekly array Feb 2026 – Jan 2027
+var WEEKS = [];
+(function() {
+  var d = new Date(2026, 1, 2); // Feb 2
+  // snap to Monday
+  var dow = d.getDay();
+  if (dow !== 1) { d.setDate(d.getDate() - (dow === 0 ? 6 : dow - 1)); }
+  var end = new Date(2027, 0, 31);
+  while (d <= end) {
+    WEEKS.push(new Date(d));
+    d.setDate(d.getDate() + 7);
+  }
+})();
+
+function wIdx(date) {
+  var d = (date instanceof Date) ? date : pd(date);
+  for (var i = 0; i < WEEKS.length; i++) {
+    var we = new Date(WEEKS[i]); we.setDate(we.getDate() + 6);
+    if (d >= WEEKS[i] && d <= we) return i;
+    if (i === 0 && d < WEEKS[i]) return 0;
+  }
+  return WEEKS.length - 1;
+}
+
+var MONTHS_EN = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+function buildMonthGroups() {
+  var groups = [], cm = -1, cy = -1, cnt = 0, si = 0;
+  for (var i = 0; i < WEEKS.length; i++) {
+    var w = WEEKS[i];
+    if (w.getMonth() !== cm || w.getFullYear() !== cy) {
+      if (cnt > 0) groups.push({ m: cm, y: cy, cnt: cnt, si: si });
+      cm = w.getMonth(); cy = w.getFullYear(); cnt = 1; si = i;
+    } else { cnt++; }
+  }
+  if (cnt > 0) groups.push({ m: cm, y: cy, cnt: cnt, si: si });
+  return groups;
+}
+
+// ─── ESCAPE ──────────────────────────────────────────────
+function esc(s) {
+  if (!s) return '';
+  return s.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ─── BUILD DETAILED VIEW ─────────────────────────────────
+function buildDetailed() {
+  var mg = buildMonthGroups();
+  var n  = WEEKS.length;
+  var html = '';
+
+  html += '<table class="gtable"><thead>';
+
+  // Month row
+  html += '<tr class="mrow">';
+  html += '<th class="lc" style="width:' + getComputedStyle(document.documentElement).getPropertyValue('--label-w') + '">Task</th>';
+  for (var gi = 0; gi < mg.length; gi++) {
+    var g = mg[gi];
+    html += '<th colspan="' + g.cnt + '" style="border-left:1px solid var(--border)">' + MONTHS_EN[g.m] + ' ' + g.y + '</th>';
+  }
+  html += '</tr>';
+
+  // Week row
+  html += '<tr class="wrow"><th class="lc"></th>';
+  for (var i = 0; i < n; i++) {
+    var w = WEEKS[i];
+    var isMS = (i === 0) || (w.getMonth() !== WEEKS[i-1].getMonth());
+    html += '<th class="' + (isMS ? 'ms' : '') + '">' + w.getDate() + '</th>';
+  }
+  html += '</tr></thead><tbody>';
+
+  // Tasks
+  var curPhase = null;
+  for (var ti = 0; ti < TASKS.length; ti++) {
+    var t = TASKS[ti];
+
+    if (t.phase !== curPhase) {
+      curPhase = t.phase;
+      html += '<tr class="prow"><td class="lc">' + t.phase + '</td>';
+      for (var i = 0; i < n; i++) {
+        html += '<td class="gc' + ((i > 0 && WEEKS[i].getMonth() !== WEEKS[i-1].getMonth()) ? ' ms' : '') + '" style="background:var(--bg)"></td>';
+      }
+      html += '</tr>';
+    }
+
+    var si = wIdx(pd(t.start));
+    var ei = wIdx(pd(t.end));
+    var col = COL[t.color] || COL.prep;
+    var isDone = (t.pct === 100);
+    var hasNote = !!t.note;
+    var tipAttr = t.note ? ' data-tip="' + esc(t.note) + '"' : '';
+    var fillEnd = si + Math.round((ei - si) * t.pct / 100);
+    var midIdx  = Math.round((si + ei) / 2);
+    var isIRB   = (t.color === 'irb');
+
+    // Label
+    var nameClass = isDone ? 'tname done' : 'tname';
+    var chkHtml  = isDone ? '<span class="chk">&#10003;</span>' : '';
+    var starHtml = hasNote ? '<span class="star">*</span>' : '';
+    var lblText  = t.label.replace(' *','').replace('*','');
+
+    html += '<tr class="trow">';
+    html += '<td class="lc"' + tipAttr + '><div class="' + nameClass + '">' + chkHtml + starHtml + ' ' + lblText + '</div></td>';
+
+    for (var i = 0; i < n; i++) {
+      var isMS = (i > 0 && WEEKS[i].getMonth() !== WEEKS[i-1].getMonth());
+      var gcClass = 'gc' + (isMS ? ' ms' : '');
+
+      if (i < si || i > ei) {
+        html += '<td class="' + gcClass + '"></td>';
+        continue;
+      }
+
+      // Milestone (single diamond)
+      if (t.milestone && i === ei) {
+        html += '<td class="' + gcClass + '"' + tipAttr + '><div class="dmd risk"></div></td>';
+        continue;
+      }
+
+      // Position
+      var lft = (i === si) ? '2px' : '-1px';
+      var rgt = (i === ei) ? '2px' : '-1px';
+      var barStyle = 'left:' + lft + ';right:' + rgt;
+
+      if (isIRB) {
+        html += '<td class="' + gcClass + '"><div class="bar" style="' + barStyle + ';background:' + col.s + ';opacity:0.78"></div></td>';
+        continue;
+      }
+
+      var bgColor = isDone ? col.d : col.s;
+
+      if (t.pct > 0 && t.pct < 100) {
+        var isFilled = (i <= fillEnd);
+        var showPct  = (i === midIdx);
+        var fillBR   = (i < ei && isFilled) ? '' : (i === ei && isFilled ? 'border-radius:3px' : '');
+        html += '<td class="' + gcClass + '"><div class="bar" style="' + barStyle + ';background:' + col.l + '">';
+        if (isFilled) {
+          html += '<div class="fill' + (i === ei ? ' full' : '') + '" style="background:' + col.s + ';' + (i < ei ? 'border-radius:0;width:100%' : '') + '"></div>';
+        }
+        if (showPct) { html += '<div class="pct">' + t.pct + '%</div>'; }
+        html += '</div></td>';
+      } else {
+        html += '<td class="' + gcClass + '"><div class="bar" style="' + barStyle + ';background:' + bgColor + '">';
+        if (isDone && i === midIdx) { html += '<div class="pct">100%</div>'; }
+        html += '</div></td>';
+      }
+    }
+    html += '</tr>';
+  }
+
+  // Milestone row
+  html += '<tr class="trow"><td class="lc"><div class="tname" style="font-size:10px;text-transform:uppercase;letter-spacing:0.6px;color:var(--muted);font-weight:600">Milestones</div></td>';
+  for (var i = 0; i < n; i++) {
+    var isMS = (i > 0 && WEEKS[i].getMonth() !== WEEKS[i-1].getMonth());
+    var gcClass = 'gc' + (isMS ? ' ms' : '');
+    var mils = MILESTONES.filter(function(m) { return wIdx(pd(m.date)) === i; });
+    if (mils.length > 0) {
+      var m = mils[0];
+      html += '<td class="' + gcClass + '" data-tip="' + esc(m.tip + '\n' + m.label) + '"><div class="dmd' + (m.done ? ' done' : '') + (m.risk ? ' risk' : '') + '"></div></td>';
+    } else {
+      html += '<td class="' + gcClass + '"></td>';
+    }
+  }
+  html += '</tr></tbody></table>';
+
+  document.getElementById('view-detailed').innerHTML = html;
+}
+
+// ─── BUILD SUMMARY VIEW ──────────────────────────────────
+function buildSummary() {
+  var months = [
+    { label:"Feb '26", s:"2026-02-01", e:"2026-02-28" },
+    { label:"Mar '26", s:"2026-03-01", e:"2026-03-31" },
+    { label:"Apr '26", s:"2026-04-01", e:"2026-04-30" },
+    { label:"May '26", s:"2026-05-01", e:"2026-05-31" },
+    { label:"Jun '26", s:"2026-06-01", e:"2026-06-30" },
+    { label:"Jul '26", s:"2026-07-01", e:"2026-07-31" },
+    { label:"Aug '26", s:"2026-08-01", e:"2026-08-31" },
+    { label:"Sep '26", s:"2026-09-01", e:"2026-09-30" },
+    { label:"Oct '26", s:"2026-10-01", e:"2026-10-31" },
+    { label:"Nov '26", s:"2026-11-01", e:"2026-11-30" },
+    { label:"Dec '26", s:"2026-12-01", e:"2026-12-31" },
+    { label:"Jan '27", s:"2027-01-01", e:"2027-01-31" }
+  ];
+
+  var smTasks = [
+    { phase:"Preparation",         label:"Preparation & recruitment",          start:"2026-02-01", end:"2026-06-12", color:"prep",   pct:55 },
+    { phase:"Preparation",         label:"IRBs (under review)",                start:"2026-05-01", end:"2026-06-12", color:"irb",    pct:0  },
+    { phase:"Implementation",      label:"Chat2Learn active",                  start:"2026-06-15", end:"2026-10-30", color:"impl",   pct:0  },
+    { phase:"Data Collection",     label:"Endline (audio + survey + coding)",  start:"2026-10-05", end:"2027-01-31", color:"data",   pct:0  },
+    { phase:"Long-run Follow-up",  label:"Long-run follow-up (2027-2030)",     start:"2027-01-15", end:"2027-01-31", color:"follow", pct:0, future:true }
+  ];
+
+  var smMil = [
+    { date:"2026-02-01", label:"Start",         risk:false, done:true  },
+    { date:"2026-06-08", label:"Randomization", risk:true,  done:false },
+    { date:"2026-06-15", label:"Launch",        risk:false, done:false },
+    { date:"2026-10-30", label:"End",           risk:false, done:false }
+  ];
+
+  var html = '<table class="gtable smtable"><thead><tr>';
+  html += '<th class="lc">Workstream</th>';
+  for (var mi = 0; mi < months.length; mi++) { html += '<th>' + months[mi].label + '</th>'; }
+  html += '<th class="futurecol" style="font-size:10px;color:var(--light)">2027&ndash;2030</th>';
+  html += '</tr></thead><tbody>';
+
+  var curPhase = null;
+  for (var ti = 0; ti < smTasks.length; ti++) {
+    var t = smTasks[ti];
+    if (t.phase !== curPhase) {
+      curPhase = t.phase;
+      html += '<tr class="phrow"><td class="lc">' + t.phase + '</td>';
+      for (var mi = 0; mi < months.length; mi++) { html += '<td></td>'; }
+      html += '<td class="futurecol"></td></tr>';
+    }
+
+    var col = COL[t.color] || COL.prep;
+    var ts = pd(t.start), te = pd(t.end);
+
+    html += '<tr><td class="lc">' + t.label + '</td>';
+    for (var mi = 0; mi < months.length; mi++) {
+      var ms = pd(months[mi].s), me = pd(months[mi].e);
+      if (ts > me || te < ms) { html += '<td></td>'; continue; }
+
+      var msRange = me - ms + 86400000;
+      var bs = Math.max(0, (ts - ms) / msRange);
+      var be = Math.min(1, (te - ms) / msRange);
+      var lp = (bs * 100).toFixed(1) + '%';
+      var wp = ((be - bs) * 100).toFixed(1) + '%';
+
+      var bg = (t.color === 'irb') ? col.s + ';opacity:0.78' : col.s;
+
+      // Milestone diamonds in this month
+      var milHtml = '';
+      for (var mii = 0; mii < smMil.length; mii++) {
+        var sm = smMil[mii];
+        var sd = pd(sm.date);
+        if (sd >= ms && sd <= me) {
+          var sp = ((sd - ms) / msRange * 100).toFixed(1) + '%';
+          milHtml += '<div class="dmd' + (sm.done ? ' done' : '') + (sm.risk ? ' risk' : '') + '" style="position:absolute;top:50%;left:' + sp + ';transform:translate(-50%,-50%) rotate(45deg);z-index:5" data-tip="' + esc(sm.label) + '"></div>';
+        }
+      }
+
+      html += '<td style="position:relative"><div class="sbar" style="left:' + lp + ';width:' + wp + ';background:' + bg + '"></div>' + milHtml + '</td>';
+    }
+
+    // Future col
+    var hasFuture = (t.future === true) || (te >= pd('2027-02-01'));
+    html += '<td class="futurecol" style="position:relative">';
+    if (hasFuture) { html += '<div class="sbar" style="left:5%;width:90%;background:' + col.s + '"></div>'; }
+    html += '</td></tr>';
+  }
+
+  // Milestone label row
+  html += '<tr><td class="lc" style="font-size:10px;color:var(--light);padding-top:8px">Key milestones</td>';
+  for (var mi = 0; mi < months.length; mi++) {
+    var ms2 = pd(months[mi].s), me2 = pd(months[mi].e);
+    var found = smMil.filter(function(sm) { var d = pd(sm.date); return d >= ms2 && d <= me2; });
+    if (found.length === 0) { html += '<td></td>'; continue; }
+    html += '<td style="vertical-align:middle">';
+    for (var fi = 0; fi < found.length; fi++) {
+      html += '<div style="font-size:9px;text-align:center;color:' + (found[fi].risk ? 'var(--c-irb)' : 'var(--muted)') + ';line-height:1.3">' + found[fi].label + '</div>';
+    }
+    html += '</td>';
+  }
+  html += '<td class="futurecol"></td></tr>';
+
+  html += '</tbody></table>';
+  document.getElementById('view-summary').innerHTML = html;
+}
+
+// ─── VIEW TOGGLE ─────────────────────────────────────────
+function switchView(v) {
+  var dv = document.getElementById('view-detailed');
+  var sv = document.getElementById('view-summary');
+  var bd = document.getElementById('btn-d');
+  var bs = document.getElementById('btn-s');
+  if (v === 'detailed') {
+    dv.style.display = 'block';
+    sv.style.display = 'none';
+    bd.className = 'toggle-btn on';
+    bs.className = 'toggle-btn';
+  } else {
+    dv.style.display = 'none';
+    sv.style.display = 'block';
+    bd.className = 'toggle-btn';
+    bs.className = 'toggle-btn on';
+  }
+}
+
+// ─── INIT ────────────────────────────────────────────────
+buildDetailed();
+buildSummary();
+</script>
+</body>
+</html>
