@@ -3,472 +3,528 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CSE + Debiasing DR — Gantt Chart</title>
+<title>Sex Ed DR — Project Gantt</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 13px; background: #fff; color: #1a1a1a; padding: 24px; }
-  h1 { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
-  .subtitle { font-size: 12px; color: #666; margin-bottom: 16px; }
-
-  /* Toggle buttons */
-  .view-toggle { display: flex; gap: 8px; margin-bottom: 20px; }
-  .view-btn { font-size: 11px; padding: 5px 14px; border: 1px solid #ccc; border-radius: 4px; background: #f5f5f5; cursor: pointer; color: #444; transition: all 0.15s; }
-  .view-btn.active { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
-
-  /* Legend */
-  .legend { display: flex; flex-wrap: wrap; gap: 14px; margin-bottom: 20px; }
-  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: #444; }
-  .legend-dot { width: 12px; height: 12px; border-radius: 3px; flex-shrink: 0; }
-  .legend-diamond { width: 10px; height: 10px; background: #f0c040; border: 1.5px solid #cca000; transform: rotate(45deg); flex-shrink: 0; }
-
-  /* Shared table styles */
-  table { border-collapse: collapse; width: 100%; table-layout: fixed; }
-  thead th { font-size: 11px; font-weight: 600; color: #555; text-align: center; padding: 4px 2px; border-bottom: 1px solid #e0e0e0; background: #fafafa; }
-  thead th.task-col { text-align: left; padding-left: 8px; }
-  thead th.month-header { border-left: 1px solid #ddd; }
-
-  /* Detail view */
-  #detail-view tbody tr:hover { background: #f7f7f7; }
-  #detail-view tbody tr.group-row { background: #f0f0f0; }
-  #detail-view tbody tr.group-row td { font-weight: 600; font-size: 12px; color: #333; padding: 5px 8px; border-top: 1px solid #ddd; }
-  #detail-view tbody td.task-cell { padding: 4px 8px; font-size: 12px; color: #333; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; position: relative; }
-  #detail-view tbody td.task-cell.done { color: #999; }
-  #detail-view tbody td.week-cell { padding: 2px; }
-  #detail-view tr { height: 24px; }
-  .check { color: #3aaa6e; font-size: 11px; margin-left: 4px; font-weight: 700; }
-  .diamond { width: 11px; height: 11px; background: #f0c040; border: 1.5px solid #cca000; transform: rotate(45deg); margin: auto; }
-
-  /* Summary view */
-  #summary-view { display: none; }
-  #summary-view tbody tr:hover { background: #f7f7f7; }
-  #summary-view tbody tr.sum-group { background: #f0f0f0; }
-  #summary-view tbody tr.sum-group td { font-weight: 700; font-size: 12px; color: #222; padding: 6px 8px; border-top: 2px solid #ccc; }
-  #summary-view tbody td.sum-task-cell { padding: 4px 8px; font-size: 11px; color: #444; white-space: nowrap; }
-  #summary-view tbody td.sum-cell { padding: 2px 1px; }
-  #summary-view tr { height: 22px; }
-
-  .note { font-size: 11px; color: #777; margin-top: 16px; border-top: 1px solid #eee; padding-top: 10px; line-height: 1.6; }
-  .note strong { color: #333; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; font-size: 12px; background: #fff; color: #222; }
+  .header { padding: 18px 24px 10px; border-bottom: 2px solid #e8e8e8; }
+  .header h1 { font-size: 17px; font-weight: 700; color: #111; }
+  .header p { font-size: 11px; color: #666; margin-top: 4px; }
+  .toggle-bar { padding: 10px 24px; display: flex; gap: 8px; }
+  .toggle-btn { padding: 6px 14px; border: 1.5px solid #ccc; background: #fff; border-radius: 4px; cursor: pointer; font-size: 11.5px; color: #555; transition: all 0.15s; }
+  .toggle-btn.active { background: #2563eb; border-color: #2563eb; color: #fff; font-weight: 600; }
+  .legend { padding: 8px 24px 10px; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; border-bottom: 1px solid #f0f0f0; }
+  .legend-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: #444; }
+  .legend-swatch { width: 14px; height: 10px; border-radius: 2px; display: inline-block; }
+  .legend-diamond { width: 10px; height: 10px; background: #555; transform: rotate(45deg); display: inline-block; flex-shrink: 0; }
+  .legend-asterisk { color: #e53e3e; font-weight: 700; font-size: 13px; }
+  .gantt-wrap { overflow-x: auto; padding: 0 24px 24px; }
+  table { border-collapse: collapse; min-width: 100%; }
+  th, td { border: 1px solid #eee; white-space: nowrap; }
+  .col-task { min-width: 210px; max-width: 210px; position: sticky; left: 0; background: #fff; z-index: 10; border-right: 2px solid #ddd; font-size: 11.5px; padding: 4px 8px; vertical-align: middle; }
+  .col-task.section-header { background: #f7f7f7; font-weight: 700; font-size: 12px; color: #333; }
+  .col-week { width: 20px; min-width: 20px; max-width: 20px; padding: 0; text-align: center; font-size: 9px; color: #aaa; }
+  .month-header { text-align: center; font-weight: 600; font-size: 11px; color: #444; padding: 4px 0; background: #fafafa; border-bottom: 1px solid #e0e0e0; }
+  .week-num { text-align: center; font-size: 9px; color: #bbb; padding: 2px 0; background: #fafafa; }
+  .task-row td { height: 26px; padding: 0; vertical-align: middle; }
+  .task-row .col-task { height: 26px; line-height: 1.2; }
+  .bar { position: absolute; top: 4px; bottom: 4px; border-radius: 3px; }
+  .pct-label { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 9px; font-weight: 700; color: #fff; pointer-events: none; white-space: nowrap; text-shadow: 0 1px 2px rgba(0,0,0,0.3); }
+  .milestone-cell { text-align: center; vertical-align: middle; }
+  .diamond { width: 11px; height: 11px; background: #555; transform: rotate(45deg); display: inline-block; vertical-align: middle; }
+  .diamond.done { opacity: 0.4; }
+  .asterisk { color: #e53e3e; font-weight: 700; margin-left: 2px; }
+  .done-check { color: #888; margin-right: 3px; }
+  .done-name { color: #999; }
+  .footnotes { padding: 16px 24px; border-top: 2px solid #e8e8e8; font-size: 11px; color: #555; }
+  .footnotes h3 { font-size: 12px; font-weight: 700; color: #333; margin-bottom: 8px; }
+  .footnotes ul { padding-left: 18px; }
+  .footnotes li { margin-bottom: 5px; line-height: 1.5; }
+  [data-tip] { position: relative; cursor: default; }
+  [data-tip]:hover::after {
+    content: attr(data-tip);
+    position: absolute; left: 50%; top: 100%; transform: translateX(-50%);
+    background: rgba(30,30,30,0.92); color: #fff; padding: 5px 9px;
+    border-radius: 4px; font-size: 10.5px; white-space: pre-line; z-index: 999;
+    min-width: 160px; max-width: 300px; line-height: 1.5;
+    margin-top: 4px; pointer-events: none;
+  }
+  tr.section-row td { background: #f5f5f5; border-top: 2px solid #ddd; }
+  tr.section-row .col-task { font-weight: 700; font-size: 12px; color: #333; }
+  #view-summary { display: none; }
+  #view-summary .col-task { min-width: 180px; max-width: 180px; }
 </style>
 </head>
 <body>
 
-<h1>CSE Program + Debiasing Intervention — Dominican Republic</h1>
-<p class="subtitle">PIs: Carolina Concha-Arriagada, Guthrie Gray-Lobe, Nina Buchmann, Sebastian Otero, Michael Kremer &nbsp;|&nbsp; Updated: May 25, 2026</p>
+<div class="header">
+  <h1>Testing a Behavioral Intervention to Reduce Teenage Pregnancy — Dominican Republic</h1>
+  <p>PIs: Carolina Concha-Arriagada, Guthrie Gray-Lobe, Nina Buchmann, Sebastian Otero, Michael Kremer &nbsp;|&nbsp; Updated: June 2026</p>
+</div>
 
-<div class="view-toggle">
-  <button class="view-btn active" onclick="switchView('detail', this)">📋 Detailed (weekly)</button>
-  <button class="view-btn" onclick="switchView('summary', this)">📊 Summary (monthly)</button>
+<div class="toggle-bar">
+  <button class="toggle-btn active" id="btn-detail" onclick="showView('detail')">📋 Detailed (weekly)</button>
+  <button class="toggle-btn" id="btn-summary" onclick="showView('summary')">📊 Summary (monthly)</button>
 </div>
 
 <div class="legend">
-  <div class="legend-item"><div class="legend-dot" style="background:#4a90d9"></div>IRB</div>
-  <div class="legend-item"><div class="legend-dot" style="background:#7b5ea7"></div>AI chatbot / web platform</div>
-  <div class="legend-item"><div class="legend-dot" style="background:#3aaa6e"></div>RCT &amp; program prep</div>
-  <div class="legend-item"><div class="legend-dot" style="background:#e8903a"></div>Implementation</div>
-  <div class="legend-item"><div class="legend-dot" style="background:#e24b4a"></div>Data collection</div>
-  <div class="legend-item"><div class="legend-dot" style="background:#888"></div>Analysis / reports</div>
-  <div class="legend-item"><div class="legend-diamond"></div>Key milestone</div>
-  <div class="legend-item"><span style="color:#e24b4a;font-size:11px;font-weight:700;">*</span>&nbsp;Hover for notes</div>
-  <div class="legend-item"><span class="check">✓</span>&nbsp;Completed (100%)</div>
+  <div class="legend-item"><span class="legend-swatch" style="background:#3b82f6"></span> IRB</div>
+  <div class="legend-item"><span class="legend-swatch" style="background:#8b5cf6"></span> AI chatbot / web platform</div>
+  <div class="legend-item"><span class="legend-swatch" style="background:#f59e0b"></span> RCT &amp; program prep</div>
+  <div class="legend-item"><span class="legend-swatch" style="background:#10b981"></span> Implementation</div>
+  <div class="legend-item"><span class="legend-swatch" style="background:#ef4444"></span> Data collection</div>
+  <div class="legend-item"><span class="legend-swatch" style="background:#6b7280"></span> Analysis / reports</div>
+  <div class="legend-item"><span class="legend-diamond"></span> Key milestone</div>
+  <div class="legend-item"><span class="legend-asterisk">*</span> Hover for notes</div>
+  <div class="legend-item"><span style="color:#888;font-weight:700">✓</span> Completed (100%)</div>
 </div>
 
-<!-- ═══════════════════════════════════════════════════════ DETAIL VIEW -->
-<div id="detail-view">
-<div style="overflow-x: auto;">
-<table>
-<thead>
-<tr>
-  <th class="task-col" style="width:265px;min-width:265px;">Task</th>
-  <th class="month-header" colspan="4" style="width:80px;">May 26</th>
-  <th class="month-header" colspan="4" style="width:80px;">Jun 26</th>
-  <th class="month-header" colspan="4" style="width:80px;">Jul 26</th>
-  <th class="month-header" colspan="4" style="width:80px;">Aug 26</th>
-  <th class="month-header" colspan="4" style="width:80px;">Sep 26</th>
-  <th class="month-header" colspan="4" style="width:80px;">Oct 26</th>
-  <th class="month-header" colspan="4" style="width:80px;">Nov 26</th>
-  <th class="month-header" colspan="4" style="width:80px;">Dec 26</th>
-  <th class="month-header" colspan="4" style="width:80px;">Jan 27</th>
-  <th class="month-header" colspan="4" style="width:80px;">Feb 27</th>
-  <th class="month-header" colspan="4" style="width:80px;">Mar 27</th>
-  <th class="month-header" colspan="4" style="width:80px;">Apr 27</th>
-  <th class="month-header" colspan="4" style="width:80px;">May 27</th>
-  <th class="month-header" colspan="2" style="width:40px;">Jun 27</th>
-</tr>
-<tr>
-  <th class="task-col"></th>
-  <th>1</th><th>2</th><th>3</th><th>4</th>
-  <th>1</th><th>2</th><th>3</th><th>4</th>
-  <th>1</th><th>2</th><th>3</th><th>4</th>
-  <th>1</th><th>2</th><th>3</th><th>4</th>
-  <th>1</th><th>2</th><th>3</th><th>4</th>
-  <th>1</th><th>2</th><th>3</th><th>4</th>
-  <th>1</th><th>2</th><th>3</th><th>4</th>
-  <th>1</th><th>2</th><th>3</th><th>4</th>
-  <th>1</th><th>2</th><th>3</th><th>4</th>
-  <th>1</th><th>2</th><th>3</th><th>4</th>
-  <th>1</th><th>2</th><th>3</th><th>4</th>
-  <th>1</th><th>2</th><th>3</th><th>4</th>
-  <th>1</th><th>2</th><th>3</th><th>4</th>
-  <th>1</th><th>2</th>
-</tr>
-</thead>
-<tbody id="detail-body"></tbody>
-</table>
+<div id="view-detail">
+<div class="gantt-wrap">
+<div id="gantt-detail-container"></div>
 </div>
 </div>
 
-<!-- ═══════════════════════════════════════════════════════ SUMMARY VIEW -->
-<div id="summary-view">
-<div style="overflow-x: auto;">
-<table id="summary-table">
-<thead>
-<tr>
-  <th class="task-col" style="width:220px;min-width:220px;">Section / Task</th>
-  <th class="month-header" style="width:52px;font-size:11px;">May 26</th>
-  <th class="month-header" style="width:52px;font-size:11px;">Jun 26</th>
-  <th class="month-header" style="width:52px;font-size:11px;">Jul 26</th>
-  <th class="month-header" style="width:52px;font-size:11px;">Aug 26</th>
-  <th class="month-header" style="width:52px;font-size:11px;">Sep 26</th>
-  <th class="month-header" style="width:52px;font-size:11px;">Oct 26</th>
-  <th class="month-header" style="width:52px;font-size:11px;">Nov 26</th>
-  <th class="month-header" style="width:52px;font-size:11px;">Dec 26</th>
-  <th class="month-header" style="width:52px;font-size:11px;">Jan 27</th>
-  <th class="month-header" style="width:52px;font-size:11px;">Feb 27</th>
-  <th class="month-header" style="width:52px;font-size:11px;">Mar 27</th>
-  <th class="month-header" style="width:52px;font-size:11px;">Apr 27</th>
-  <th class="month-header" style="width:52px;font-size:11px;">May 27</th>
-  <th class="month-header" style="width:52px;font-size:11px;">Jun 27</th>
-</tr>
-</thead>
-<tbody id="summary-body"></tbody>
-</table>
+<div id="view-summary">
+<div class="gantt-wrap">
+<div id="gantt-summary-container"></div>
 </div>
 </div>
 
-<div class="note" id="footnotes">
-  <strong>⚠️ Key constraints &amp; changes (updated May 25, 2026):</strong><br>
-  • TOR published May w3; proposal deadline June 4 (Jun w1). MINERD reviewing web platform content May w3 – Jun w2.<br>
-  • Carolina–MINERD meeting: <strong>first week of June</strong> — prerequisite for IRB submission and chatbot contracting.<br>
-  • IRB drafting starts Jun w1; target IRB approval end of August (~2 months review).<br>
-  • Chatbot phases: P1 audit Jun w2–w3 · P2 build+QA Jun w3–Jul w2 · pilot Jul w3–w4 · P3 integration Aug w1–w2 · P4 launch Aug w3.<br>
-  • Field monitor training scheduled Aug w1–w2; all preceding prep tasks adjusted to start in July.<br>
-  • Phase 5 support period through <strong>December 15, 2026</strong>; research team assumes API + hosting costs after that date.<br>
-  • <em>Any delay in MINERD meeting or consultant contracting pushes Phase 4 into September.</em>
+<div class="footnotes">
+  <h3>Key constraints &amp; notes (updated June 2026)</h3>
+  <ul>
+    <li>TOR published May w3 (May 19, 2026). Proposal deadline was June 4. First contact with likely-selected chatbot consultant begins Jun w4 via comments; contracting targets Jul w1.</li>
+    <li>Carolina–MINERD meeting took place Jun w3. Green light for IRB drafting (starts Jun w4) and chatbot contracting.</li>
+    <li>IRB drafting starts Jun w4; target IRB submission start of August; target approval end of September (~2 months review).</li>
+    <li>Chatbot phases: P1 audit Jun w4–Jul w1 · P2 build+QA Jul w1–w4 · pilot Aug w1–w2 · P3 integration Aug w3–w4 · P4 launch Sep w1. Phase 5 support through Dec 15, 2026.</li>
+    <li>MINERD confirmed program (ESI en Valores) will not start before October — first weeks of the school year are orientation with no regular classes. School year opens September; program delivery starts Oct w1.</li>
+    <li>Grades 10–12 (second cycle): program will not start before January 2027 due to delayed teacher training. Timeline shown is unified for grades 7–9 (first cycle). Monitoring for grades 10–12 schools will require a separate schedule TBD.</li>
+    <li>Monitoring visit 1 scheduled last two weeks of September (Sep w3). Field monitor training: one week prior (Sep w2). Monitor recruitment: do not begin until visit dates are confirmed (tentatively Jul–Aug).</li>
+    <li>Any delay in consultant contracting pushes Phase 4 into October. Any delay in MINERD guidelines printing could shift monitoring visit 1.</li>
+    <li>Research team assumes API + hosting costs after Dec 15, 2026.</li>
+  </ul>
 </div>
 
 <script>
-// ─────────────────────────────────────────────────────────────────────────────
-// WEEK INDEX: w0 = May w1
-// May: 0–3 | Jun: 4–7 | Jul: 8–11 | Aug: 12–15 | Sep: 16–19 | Oct: 20–23
-// Nov: 24–27 | Dec: 28–31 | Jan27: 32–35 | Feb: 36–39 | Mar: 40–43
-// Apr: 44–47 | May27: 48–51 | Jun27: 52–53
-// Total: 54 columns
-// ─────────────────────────────────────────────────────────────────────────────
-const WEEKS = 54;
-const MONTHS = 14; // May26–Jun27
-const MONTH_LABELS = ['May 26','Jun 26','Jul 26','Aug 26','Sep 26','Oct 26','Nov 26','Dec 26','Jan 27','Feb 27','Mar 27','Apr 27','May 27','Jun 27'];
-// Week offset of each month's first week
-const MONTH_START_W = [0,4,8,12,16,20,24,28,32,36,40,44,48,52];
+// =============================================================
+// WEEK INDEX KEY
+// w(monthIndex, weekInMonth) — monthIndex 0-based from May 2026
+// May26=0, Jun26=1, Jul26=2, Aug26=3, Sep26=4, Oct26=5
+// Nov26=6, Dec26=7, Jan27=8, Feb27=9, Mar27=10, Apr27=11
+// May27=12, Jun27=13
+// TOTAL WEEKS: 56 (w0..w55)
+// =============================================================
 
-const IRB='#4a90d9', CHAT='#7b5ea7', SESS='#3aaa6e', IMPL='#e8903a', DATA='#e24b4a', ANA='#888';
+// EDITABLE PROGRESS VALUES (pct: 0–100)
+// Edit the pct: field for each task to update completion.
 
-// s/e = week indices (inclusive). pct 0–100.
-const tasks = [
-  { label:'0. IRB', isGroup:true, summaryColor: IRB },
+const MONTHS = [
+  {label:'May 26', weeks:4}, {label:'Jun 26', weeks:4}, {label:'Jul 26', weeks:4},
+  {label:'Aug 26', weeks:4}, {label:'Sep 26', weeks:4}, {label:'Oct 26', weeks:4},
+  {label:'Nov 26', weeks:4}, {label:'Dec 26', weeks:4}, {label:'Jan 27', weeks:4},
+  {label:'Feb 27', weeks:4}, {label:'Mar 27', weeks:4}, {label:'Apr 27', weeks:4},
+  {label:'May 27', weeks:4}, {label:'Jun 27', weeks:4}
+];
+const TOTAL_WEEKS = 56;
 
-  { label:'Carolina–MINERD meeting',
-    color:null, s:4, e:4, isMilestone:true, pct:0,
-    note:'First week of June — prerequisite for IRB submission and chatbot contracting. TOR proposal deadline is June 4.' },
+function w(m, wk) { return m * 4 + (wk - 1); }
 
-  { label:'IRB drafting and submission',
-    color:IRB, s:4, e:7, pct:0,
-    note:'Starts immediately after MINERD go-ahead' },
-
-  { label:'IRB review (~2 months) — target: end of Aug',
-    color:IRB, s:8, e:15, pct:0 },
-
-  { label:'1. AI Chatbot & Web Platform', isGroup:true, summaryColor: CHAT },
-
-  { label:'TOR finalization',
-    color:CHAT, s:0, e:1, pct:100,
-    note:'Finalized in first half of May 2026' },
-
-  { label:'TOR published',
-    color:null, s:2, e:2, isMilestone:true, pct:100,
-    note:'Published May w3 (May 19, 2026). Proposal deadline June 4.' },
-
-  { label:'MINERD web platform content review',
-    color:CHAT, s:2, e:5, pct:50,
-    note:'MINERD reviewing web platform content May w3 – Jun w2' },
-
-  { label:'TOR proposal review & consultant selection',
-    color:CHAT, s:4, e:5, pct:0,
-    note:'Proposal deadline June 4 (Jun w1). Research team reviews Jun w1–w2.' },
-
-  { label:'Consultant contracting',
-    color:CHAT, s:5, e:6, pct:0,
-    note:'Contract signed immediately after MINERD meeting and proposal review' },
-
-  { label:'Phase 1: platform audit (~2 weeks)',
-    color:CHAT, s:6, e:7, pct:0,
-    note:'1 week consultant delivery + 1 week team review. Deliverable: written summary of existing codebase and proposed architecture.' },
-
-  { label:'Phase 2: standalone chatbot build + QA (~4 weeks)',
-    color:CHAT, s:7, e:10, pct:0,
-    note:'~2 weeks build + 1 week team review + 1 week QA/fixes. Crisis protocol, logging, adversarial QA report.' },
-
-  { label:'Standalone chatbot pilot (research team)',
-    color:CHAT, s:11, e:12, pct:0,
-    note:'Research team pilots standalone chatbot with students. Duration TBD.' },
-
-  { label:'Go-ahead for platform integration',
-    color:null, s:11, e:11, isMilestone:true, pct:0,
-    note:'Research team decision — must happen by Jul w4 to keep phases on track' },
-
-  { label:'Phase 3: platform integration (~3 weeks)',
-    color:CHAT, s:12, e:14, pct:0,
-    note:'Universal login, group routing, bulk user import (~100k), admin panel.' },
-
-  { label:'Phase 4: production launch + handover (~1 week)',
-    color:CHAT, s:14, e:14, pct:0,
-    note:'⚠️ Must complete by end of Aug — 1 month before Sep program start.' },
-
-  { label:'Phase 5: support period (through Dec 15, 2026)',
-    color:CHAT, s:15, e:31, pct:0,
-    note:'Bug fixes 48h SLA, system prompt updates 3 business days. Research team assumes API + hosting after Dec 15.' },
-
-  { label:'2. RCT and Program Implementation Prep', isGroup:true, summaryColor: SESS },
-
-  { label:'School randomization',
-    color:SESS, s:8, e:10, pct:0,
-    note:'Moved to Jul to allow field monitor training to start Aug w1' },
-
-  { label:'Coordinate and schedule trainings',
-    color:SESS, s:8, e:12, pct:0 },
-
-  { label:'Remote teacher training',
-    color:SESS, s:10, e:13, pct:0 },
-
-  { label:'Field monitor training',
-    color:SESS, s:12, e:13, pct:0,
-    note:'Scheduled Aug w1–w2' },
-
-  { label:'Training completion monitoring',
-    color:SESS, s:13, e:15, pct:0 },
-
-  { label:'Field monitor coordination',
-    color:SESS, s:13, e:15, pct:0 },
-
-  { label:'3. Program Implementation', isGroup:true, summaryColor: IMPL },
-
-  { label:'CSE program implementation',
-    color:IMPL, s:16, e:48, pct:0 },
-
-  { label:'Debiasing intervention implementation',
-    color:IMPL, s:16, e:48, pct:0 },
-
-  { label:'Monitoring visit 1 — materials delivery',
-    color:IMPL, s:16, e:17, pct:0 },
-
-  { label:'Monitoring visit 2 — compliance monitoring',
-    color:IMPL, s:24, e:25, pct:0 },
-
-  { label:'Monitoring visit 3 — completion verification',
-    color:IMPL, s:44, e:45, pct:0 },
-
-  { label:'4. Data Collection', isGroup:true, summaryColor: DATA },
-
-  { label:'Survey instrument development',
-    color:DATA, s:32, e:39, pct:0 },
-
-  { label:'Survey instrument piloting',
-    color:DATA, s:40, e:43, pct:0 },
-
-  { label:'Midline enumerator training',
-    color:DATA, s:44, e:47, pct:0 },
-
-  { label:'Midline data collection (May 2027)',
-    color:DATA, s:48, e:53, pct:0 },
-
-  { label:'5. Analysis & Reports', isGroup:true, summaryColor: ANA },
-
-  { label:'Midline data cleaning and analysis',
-    color:ANA, s:52, e:53, pct:0 },
+const SECTIONS = [
+  {
+    id: 'irb', label: 'Section 1 — IRB', color: '#3b82f6',
+    tasks: [
+      {
+        name: 'TOR finalization & publication', start: w(0,3), end: w(0,3),
+        pct: 100,
+        note: 'TOR published May 19, 2026. Proposal deadline June 4.'
+      },
+      {
+        name: 'Carolina–MINERD meeting', start: w(1,3), end: w(1,3),
+        milestone: true, pct: 100,
+        note: 'Held Jun w3. Green light for IRB drafting and chatbot contracting.'
+      },
+      {
+        name: 'IRB protocol drafting', start: w(1,4), end: w(3,4),
+        pct: 0,
+        note: 'Starts Jun w4 after MINERD meeting confirmed. Target submission: Aug w1.'
+      },
+      {
+        name: 'IRB submission', start: w(3,1), end: w(3,1),
+        milestone: true, pct: 0,
+        note: 'Target: start of August.'
+      },
+      {
+        name: 'IRB review period', start: w(3,1), end: w(4,4),
+        pct: 0,
+        note: '~2 months review. Target approval: end of September.'
+      },
+      {
+        name: 'IRB approval', start: w(4,4), end: w(4,4),
+        milestone: true, pct: 0,
+        note: 'Target: end of September / start of October.'
+      },
+    ]
+  },
+  {
+    id: 'chatbot', label: 'Section 2 — AI Chatbot / Web Platform', color: '#8b5cf6',
+    tasks: [
+      {
+        name: 'MINERD web platform content review', start: w(0,3), end: w(1,2),
+        pct: 50,
+        note: 'MINERD reviewing ESI en Valores content for web platform. Target completion Jun w2.'
+      },
+      {
+        name: 'TOR proposal review & consultant selection', start: w(1,1), end: w(1,4),
+        pct: 0,
+        note: 'Proposals received by Jun 4. First contact with likely consultant via comments: Jun w4. Selection finalized Jun w4.'
+      },
+      {
+        name: 'Consultant contracting', start: w(2,1), end: w(2,1),
+        pct: 0,
+        note: 'Contracting targets Jul w1.'
+      },
+      {
+        name: 'P1: Platform audit & spec', start: w(1,4), end: w(2,1),
+        pct: 0,
+        note: 'Phase 1: Audit actividadesesienvalores.com.do and produce technical spec. Jun w4–Jul w1.'
+      },
+      {
+        name: 'P2: Standalone chatbot build + QA', start: w(2,1), end: w(2,4),
+        pct: 0,
+        note: 'Phase 2: Build claude-haiku-4-5 chatbot standalone, QA testing. Jul w1–w4.'
+      },
+      {
+        name: 'Pilot test (chatbot)', start: w(3,1), end: w(3,2),
+        pct: 0,
+        note: 'Pilot with small user group. Aug w1–w2.'
+      },
+      {
+        name: 'P3: WordPress/EduBin integration', start: w(3,3), end: w(3,4),
+        pct: 0,
+        note: 'Phase 3: Integrate chatbot into WordPress/EduBin platform. Aug w3–w4.'
+      },
+      {
+        name: 'P4: Full launch', start: w(4,1), end: w(4,1),
+        milestone: true, pct: 0,
+        note: 'Phase 4: Public launch on actividadesesienvalores.com.do. Sep w1.'
+      },
+      {
+        name: 'P5: Ongoing support & maintenance', start: w(4,1), end: w(7,3),
+        pct: 0,
+        note: 'Phase 5: Support through December 15, 2026. Research team assumes API + hosting costs after.'
+      },
+    ]
+  },
+  {
+    id: 'prep', label: 'Section 3 — RCT & Program Implementation Prep', color: '#f59e0b',
+    tasks: [
+      {
+        name: 'Survey instrument finalization', start: w(1,4), end: w(3,2),
+        pct: 0,
+        note: 'Finalize baseline and follow-up survey instruments. Starts Jun w4.'
+      },
+      {
+        name: 'Sample & randomization finalization', start: w(1,4), end: w(3,1),
+        pct: 0,
+        note: 'Randomization needed urgently for grades 10–12 schools (MINERD needs school list). Grades 7–9 randomization also to be finalized.'
+      },
+      {
+        name: 'MINERD coordination & MOU', start: w(1,4), end: w(3,2),
+        pct: 0,
+        note: 'Formalize partnership with MINERD. Ongoing coordination on program calendar and teacher training.'
+      },
+      {
+        name: 'Debiasing materials development', start: w(2,1), end: w(3,4),
+        pct: 0,
+        note: 'Develop and refine debiasing intervention materials and online exercises. Next iteration: full exercise set.'
+      },
+      {
+        name: 'Field monitor recruitment', start: w(2,1), end: w(3,4),
+        pct: 0,
+        note: 'Do not begin until visit dates confirmed. Tentatively Jul–Aug. Training will happen ~1 week before first visit.'
+      },
+      {
+        name: 'Field monitor training', start: w(4,2), end: w(4,2),
+        pct: 0,
+        note: 'Training ~1 week before monitoring visit 1 (Sep w3). Scheduled Sep w2. Gabi may not be available for training itself but can help prepare materials.'
+      },
+      {
+        name: 'Pilot survey & debrief', start: w(3,3), end: w(4,1),
+        pct: 0,
+        note: 'Pilot survey instruments with small school sample before baseline.'
+      },
+    ]
+  },
+  {
+    id: 'impl', label: 'Section 4 — Implementation', color: '#10b981',
+    tasks: [
+      {
+        name: 'Monitoring visit 1', start: w(4,3), end: w(4,3),
+        milestone: true, pct: 0,
+        note: 'First monitoring visit: last two weeks of September (Sep w3). School year open but program not yet running.'
+      },
+      {
+        name: 'ESI en Valores program starts (grades 7–9)', start: w(5,1), end: w(5,1),
+        milestone: true, pct: 0,
+        note: 'Program starts October 2026 for grades 7–9 (first cycle). Run by MINERD. First weeks of school year are orientation only.'
+      },
+      {
+        name: 'ESI en Valores program delivery', start: w(5,1), end: w(9,4),
+        pct: 0,
+        note: 'Program delivered across schools, grades 7–9. Oct 2026 – Feb 2027. Grades 10–12 start Jan 2027 (separate schedule TBD).'
+      },
+      {
+        name: 'Debiasing sessions (treatment schools)', start: w(5,2), end: w(9,4),
+        pct: 0,
+        note: 'Supplementary debiasing intervention in treatment arm schools. Chatbot scope (debiasing arm only vs. cross-randomized) still under discussion.'
+      },
+      {
+        name: 'Monitoring visit 2', start: w(6,2), end: w(6,2),
+        milestone: true, pct: 0,
+        note: 'Second monitoring visit. Nov 2026.'
+      },
+      {
+        name: 'Monitoring visit 3', start: w(8,2), end: w(8,2),
+        milestone: true, pct: 0,
+        note: 'Third monitoring visit near end of program delivery. Jan 2027.'
+      },
+    ]
+  },
+  {
+    id: 'data', label: 'Section 5 — Data Collection', color: '#ef4444',
+    tasks: [
+      {
+        name: 'Baseline data collection', start: w(4,1), end: w(4,4),
+        pct: 0,
+        note: 'Baseline survey across all schools. September 2026.'
+      },
+      {
+        name: 'Midline data collection', start: w(12,1), end: w(12,4),
+        pct: 0,
+        note: 'Midline: May 2027.'
+      },
+      {
+        name: 'Endline data collection', start: w(13,1), end: w(13,4),
+        pct: 0,
+        note: 'Endline: Jun 2027 (timeline may extend beyond chart).'
+      },
+    ]
+  },
+  {
+    id: 'analysis', label: 'Section 6 — Analysis & Reports', color: '#6b7280',
+    tasks: [
+      {
+        name: 'Baseline data cleaning & analysis', start: w(5,1), end: w(6,4),
+        pct: 0,
+        note: 'Clean and analyze baseline data.'
+      },
+      {
+        name: 'Weiss Fund progress report', start: w(6,1), end: w(6,2),
+        pct: 0,
+        note: 'Required progress report to Weiss Fund funder.'
+      },
+      {
+        name: 'Midline data cleaning & analysis', start: w(12,3), end: w(13,4),
+        pct: 0,
+        note: 'Midline cleaning and preliminary analysis.'
+      },
+    ]
+  }
 ];
 
-// ─────────────────────────────────────────────────────────────────────────────
-// HELPERS
-// ─────────────────────────────────────────────────────────────────────────────
-const monthStarts = new Set(MONTH_START_W);
-
+// =============================================================
+// COLOR UTILITIES
+// =============================================================
 function desaturate(hex) {
-  let r=parseInt(hex.slice(1,3),16)/255, g=parseInt(hex.slice(3,5),16)/255, b=parseInt(hex.slice(5,7),16)/255;
-  let max=Math.max(r,g,b), min=Math.min(r,g,b), l=(max+min)/2, s=0, h=0;
-  if(max!==min){ let d=max-min; s=l>0.5?d/(2-max-min):d/(max+min);
-    switch(max){case r:h=(g-b)/d+(g<b?6:0);break;case g:h=(b-r)/d+2;break;case b:h=(r-g)/d+4;break;} h/=6; }
-  s=s*0.25; l=Math.min(l+0.22,0.82);
-  function hue2rgb(p,q,t){if(t<0)t+=1;if(t>1)t-=1;if(t<1/6)return p+(q-p)*6*t;if(t<1/2)return q;if(t<2/3)return p+(q-p)*(2/3-t)*6;return p;}
-  let q2=l<0.5?l*(1+s):l+s-l*s, p2=2*l-q2;
-  r=hue2rgb(p2,q2,h+1/3); g=hue2rgb(p2,q2,h); b=hue2rgb(p2,q2,h-1/3);
-  return '#'+[r,g,b].map(x=>Math.round(x*255).toString(16).padStart(2,'0')).join('');
+  let r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
+  r = Math.round(r + (220-r)*0.7);
+  g = Math.round(g + (220-g)*0.7);
+  b = Math.round(b + (220-b)*0.7);
+  return `rgb(${r},${g},${b})`;
+}
+function hexOpacity(hex, opacity) {
+  let r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
+  return `rgba(${r},${g},${b},${opacity})`;
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// DETAIL VIEW
-// ─────────────────────────────────────────────────────────────────────────────
-const detailBody = document.getElementById('detail-body');
+// =============================================================
+// RENDER DETAILED VIEW
+// =============================================================
+function renderDetail() {
+  const container = document.getElementById('gantt-detail-container');
+  let html = '<table>';
 
-tasks.forEach(t => {
-  const tr = document.createElement('tr');
-  if (t.isGroup) {
-    tr.className = 'group-row';
-    tr.innerHTML = `<td colspan="${WEEKS+1}">${t.label}</td>`;
-    detailBody.appendChild(tr); return;
+  html += '<thead><tr><th class="col-task" rowspan="2" style="background:#fff;"></th>';
+  MONTHS.forEach(m => {
+    html += `<th class="month-header col-week" colspan="${m.weeks}">${m.label}</th>`;
+  });
+  html += '</tr><tr>';
+  for (let i = 0; i < TOTAL_WEEKS; i++) {
+    html += `<th class="week-num col-week">${(i % 4) + 1}</th>`;
   }
-  const pct = t.pct ?? 0, done = pct===100, inProgress = pct>0&&pct<100;
-  const tip = t.note ? ` title="${t.note}"` : '';
-  const star = (t.note&&!t.isMilestone) ? ' <span style="color:#e24b4a;font-size:10px;font-weight:700;">*</span>' : '';
-  const check = done ? ' <span class="check">✓</span>' : '';
-  let cells = `<td class="task-cell${done?' done':''}"${tip} style="width:265px;min-width:265px;">${t.label}${star}${check}</td>`;
+  html += '</tr></thead><tbody>';
 
-  for (let w=0; w<WEEKS; w++) {
-    const bl = monthStarts.has(w) ? 'border-left:1px solid #e8e8e8;' : '';
-    if (t.isMilestone && w===t.s) {
-      const fullTip = t.label+(t.note?' — '+t.note:'');
-      const doneStyle = done?'opacity:0.4;':'';
-      cells += `<td class="week-cell" style="${bl}vertical-align:middle;" title="${fullTip}"><div class="diamond" style="${doneStyle}"></div></td>`;
-    } else if (!t.isMilestone && t.s!==null && w>=t.s && w<=t.e) {
-      const rs=w===t.s, re=w===t.e;
-      const rad=`${rs?'3px':'0'} ${re?'3px':'0'} ${re?'3px':'0'} ${rs?'3px':'0'}`;
-      const totalW = t.e-t.s+1;
-      const completedW = Math.round(totalW*pct/100);
-      const pos = w-t.s;
-      const midW = t.s+Math.floor(totalW/2);
-      if (done) {
-        const dc=desaturate(t.color);
-        cells += `<td class="week-cell" style="${bl}padding:4px 0;"><div style="height:14px;background:${dc};border-radius:${rad};"></div></td>`;
-      } else if (inProgress) {
-        const isSolid = pos < completedW;
-        const bg = isSolid ? t.color : t.color+'28';
-        const border = isSolid ? '' : `border:1px solid ${t.color}44;`;
-        const opacity = isSolid ? 'opacity:0.85;' : '';
-        // pct label overlaid inside bar at midpoint
-        const pctOverlay = (w===midW) ?
-          `<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:9px;font-weight:700;color:${isSolid?'#fff':'#555'};white-space:nowrap;pointer-events:none;">${pct}%</div>` : '';
-        cells += `<td class="week-cell" style="${bl}padding:4px 0;position:relative;">
-          <div style="height:14px;background:${bg};border-radius:${rad};${border}${opacity}position:relative;">
-            ${w===midW?`<span style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:9px;font-weight:700;color:${isSolid?'#fff':'#666'};white-space:nowrap;">${pct}%</span>`:''}
-          </div></td>`;
+  SECTIONS.forEach(sec => {
+    html += `<tr class="section-row"><td class="col-task section-header">${sec.label}</td>`;
+    for (let i = 0; i < TOTAL_WEEKS; i++) html += '<td style="background:#f5f5f5;"></td>';
+    html += '</tr>';
+
+    sec.tasks.forEach(task => {
+      const isDone = task.pct === 100;
+      const hasNote = !!task.note;
+      const tipAttr = hasNote ? ` data-tip="${task.note.replace(/"/g,'&quot;')}"` : '';
+      const asterisk = hasNote ? '<span class="asterisk">*</span>' : '';
+
+      let labelHtml;
+      if (isDone) {
+        labelHtml = `<span class="done-check">✓</span><span class="done-name">${task.name}</span>${asterisk}`;
       } else {
-        cells += `<td class="week-cell" style="${bl}padding:4px 0;"><div style="height:14px;background:${t.color};border-radius:${rad};opacity:0.85;"></div></td>`;
+        labelHtml = `${task.name}${asterisk}`;
       }
-    } else {
-      cells += `<td class="week-cell" style="${bl}"></td>`;
-    }
-  }
-  tr.innerHTML = cells;
-  detailBody.appendChild(tr);
-});
 
-// ─────────────────────────────────────────────────────────────────────────────
-// SUMMARY VIEW — monthly granularity, one row per section + key milestones
-// ─────────────────────────────────────────────────────────────────────────────
-const summaryBody = document.getElementById('summary-body');
-const COLS = MONTHS; // 14 months
+      html += `<tr class="task-row"><td class="col-task"${tipAttr}>${labelHtml}</td>`;
 
-// Summary rows: section header rows + selected key tasks collapsed per section
-// For each section we show: the section bar (min-to-max of all tasks in it),
-// then a few key milestone/sub-rows
-const summaryRows = [
-  { label:'0. IRB', isGroup:true, color: IRB },
-  { label:'IRB process', color:IRB, mStart:1, mEnd:3,
-    note:'Drafting Jun, review Jul–Aug, target approval end Aug' },
-  { label:'★ MINERD meeting', isMilestone:true, mMonth:1, color:'#f0c040',
-    note:'First week of June — go/no-go for chatbot contracting' },
+      for (let wi = 0; wi < TOTAL_WEEKS; wi++) {
+        if (task.milestone) {
+          if (wi === task.start) {
+            html += `<td class="milestone-cell"${tipAttr}><div class="diamond${isDone ? ' done' : ''}"></div></td>`;
+          } else {
+            html += '<td></td>';
+          }
+          continue;
+        }
 
-  { label:'1. AI Chatbot & Web Platform', isGroup:true, color: CHAT },
-  { label:'TOR / contracting', color:CHAT, mStart:0, mEnd:1,
-    note:'TOR published May w3, proposals due Jun 4, contracting Jun w1–w2' },
-  { label:'Platform dev (P1–P4)', color:CHAT, mStart:1, mEnd:3,
-    note:'P1 audit Jun w2–w3 · P2 build+QA Jun w3–Jul w2 · P3 integration Aug w1–w2 · P4 launch Aug w3' },
-  { label:'MINERD content review', color:CHAT, mStart:0, mEnd:1,
-    note:'MINERD reviewing platform content May w3 – Jun w2' },
-  { label:'Support period (P5)', color:CHAT, mStart:3, mEnd:7,
-    note:'Through December 15, 2026' },
-  { label:'★ Platform live', isMilestone:true, mMonth:3, color:'#f0c040',
-    note:'Production launch target: Aug w3 — 1 month before program start' },
+        if (wi < task.start || wi > task.end) {
+          html += '<td></td>';
+          continue;
+        }
 
-  { label:'2. RCT & Program Implementation Prep', isGroup:true, color: SESS },
-  { label:'School randomization', color:SESS, mStart:2, mEnd:2 },
-  { label:'Teacher & monitor training', color:SESS, mStart:2, mEnd:3,
-    note:'Remote teacher training Jul–Aug · Field monitor training Aug w1–w2' },
+        const spanLen = task.end - task.start + 1;
+        const isFirst = wi === task.start;
+        const isLast = wi === task.end;
+        const isOnly = isFirst && isLast;
+        const br = isOnly ? '3px' : isFirst ? '3px 0 0 3px' : isLast ? '0 3px 3px 0' : '0';
 
-  { label:'3. Program Implementation', isGroup:true, color: IMPL },
-  { label:'CSE + debiasing program', color:IMPL, mStart:4, mEnd:12,
-    note:'Oct 2026 – May 2027' },
-  { label:'★ Monitoring visit 1', isMilestone:true, mMonth:4, color:'#f0c040',
-    note:'Materials delivery, Sep 26' },
-  { label:'★ Monitoring visit 2', isMilestone:true, mMonth:6, color:'#f0c040',
-    note:'Compliance monitoring, Nov 26' },
-  { label:'★ Monitoring visit 3', isMilestone:true, mMonth:11, color:'#f0c040',
-    note:'Completion verification, Apr 27' },
+        let barBg;
+        if (isDone) {
+          barBg = desaturate(sec.color);
+        } else if (task.pct > 0) {
+          const solidWeeks = Math.floor((task.pct / 100) * spanLen);
+          const posInSpan = wi - task.start;
+          barBg = posInSpan < solidWeeks ? sec.color : hexOpacity(sec.color, 0.15);
+        } else {
+          barBg = sec.color;
+        }
 
-  { label:'4. Data Collection', isGroup:true, color: DATA },
-  { label:'Survey development & piloting', color:DATA, mStart:8, mEnd:11,
-    note:'Instrument dev Jan–Feb · Piloting Mar–Apr' },
-  { label:'Midline data collection', color:DATA, mStart:12, mEnd:13,
-    note:'Enumerator training Apr · Collection May–Jun 27' },
+        // Pct label: render only in the midpoint cell
+        let pctHtml = '';
+        if (task.pct > 0 && !isDone) {
+          const midWi = task.start + Math.floor((task.end - task.start) / 2);
+          if (wi === midWi) {
+            pctHtml = `<span class="pct-label">${task.pct}%</span>`;
+          }
+        }
 
-  { label:'5. Analysis & Reports', isGroup:true, color: ANA },
-  { label:'Midline cleaning & analysis', color:ANA, mStart:13, mEnd:13,
-    note:'Jun 27' },
-];
+        html += `<td style="position:relative;"${tipAttr}>`;
+        html += `<div style="position:absolute;top:4px;bottom:4px;left:0;right:0;background:${barBg};border-radius:${br};"></div>`;
+        html += pctHtml;
+        html += '</td>';
+      }
 
-summaryRows.forEach(r => {
-  const tr = document.createElement('tr');
-  if (r.isGroup) {
-    tr.className = 'sum-group';
-    tr.innerHTML = `<td colspan="${COLS+1}" style="border-left:4px solid ${r.color};">${r.label}</td>`;
-    summaryBody.appendChild(tr); return;
-  }
-  const tip = r.note ? ` title="${r.note}"` : '';
-  let cells = `<td class="sum-task-cell"${tip} style="padding-left:16px;">${r.label}</td>`;
+      html += '</tr>';
+    });
+  });
 
-  for (let m=0; m<COLS; m++) {
-    const bl = m===0?'':'border-left:1px solid #eee;';
-    if (r.isMilestone) {
-      if (m===r.mMonth) {
-        cells += `<td class="sum-cell" style="${bl}vertical-align:middle;text-align:center;" title="${r.label}${r.note?' — '+r.note:''}">
-          <div style="width:10px;height:10px;background:#f0c040;border:1.5px solid #cca000;transform:rotate(45deg);margin:auto;"></div></td>`;
+  html += '</tbody></table>';
+  container.innerHTML = html;
+}
+
+// =============================================================
+// RENDER SUMMARY VIEW
+// =============================================================
+function renderSummary() {
+  const container = document.getElementById('gantt-summary-container');
+
+  const summaryRows = [
+    {
+      label: 'IRB process', color: '#3b82f6', startM: 1, endM: 4,
+      milestones: [{m:1, label:'MINERD mtg'}, {m:3, label:'Submission'}, {m:4, label:'Approval'}]
+    },
+    {
+      label: 'AI chatbot / web platform', color: '#8b5cf6', startM: 0, endM: 7,
+      milestones: [{m:4, label:'Launch'}]
+    },
+    {
+      label: 'RCT & program prep', color: '#f59e0b', startM: 1, endM: 4,
+      milestones: [{m:4, label:'FMon training'}]
+    },
+    {
+      label: 'Implementation', color: '#10b981', startM: 4, endM: 9,
+      milestones: [{m:4, label:'Visit 1'}, {m:5, label:'Prog. start'}]
+    },
+    {
+      label: 'Data collection', color: '#ef4444', startM: 4, endM: 13,
+      milestones: [{m:12, label:'Midline'}, {m:13, label:'Endline'}]
+    },
+    {
+      label: 'Analysis & reports', color: '#6b7280', startM: 5, endM: 13,
+      milestones: []
+    },
+  ];
+
+  const tdBase = 'style="min-width:52px;width:52px;height:32px;padding:0;border:1px solid #eee;position:relative;vertical-align:middle;"';
+  const taskTd = 'style="min-width:180px;max-width:180px;position:sticky;left:0;background:#fff;z-index:10;border-right:2px solid #ddd;font-size:11.5px;padding:4px 8px;height:32px;vertical-align:middle;border:1px solid #eee;"';
+
+  let html = '<table style="border-collapse:collapse;min-width:100%;">';
+  html += '<thead><tr>';
+  html += `<th ${taskTd.replace('border:1px solid #eee;','')} style="min-width:180px;max-width:180px;position:sticky;left:0;background:#fff;z-index:10;border-right:2px solid #ddd;"></th>`;
+  MONTHS.forEach(m => {
+    html += `<th style="min-width:52px;width:52px;text-align:center;font-weight:600;font-size:11px;color:#444;padding:4px 2px;background:#fafafa;border:1px solid #eee;border-bottom:1px solid #e0e0e0;">${m.label}</th>`;
+  });
+  html += '</tr></thead><tbody>';
+
+  summaryRows.forEach(row => {
+    html += '<tr>';
+    html += `<td style="min-width:180px;max-width:180px;position:sticky;left:0;background:#fff;z-index:10;border-right:2px solid #ddd;font-size:11.5px;padding:4px 8px;height:32px;vertical-align:middle;border:1px solid #eee;">${row.label}</td>`;
+
+    MONTHS.forEach((m, mi) => {
+      const ms = row.milestones && row.milestones.find(x => x.m === mi);
+      if (ms) {
+        html += `<td ${tdBase} style="min-width:52px;width:52px;height:32px;padding:0;border:1px solid #eee;position:relative;vertical-align:middle;text-align:center;">`;
+        html += `<div style="width:11px;height:11px;background:#444;transform:rotate(45deg);display:inline-block;"></div>`;
+        html += `<div style="font-size:8px;color:#555;position:absolute;bottom:1px;left:0;right:0;text-align:center;overflow:hidden;">${ms.label}</div>`;
+        html += '</td>';
+      } else if (mi >= row.startM && mi <= row.endM) {
+        const isFirst = mi === row.startM, isLast = mi === row.endM;
+        const br = isFirst && isLast ? '3px' : isFirst ? '3px 0 0 3px' : isLast ? '0 3px 3px 0' : '0';
+        html += `<td ${tdBase} style="min-width:52px;width:52px;height:32px;padding:0;border:1px solid #eee;position:relative;vertical-align:middle;">`;
+        html += `<div style="position:absolute;top:7px;bottom:7px;left:0;right:0;background:${row.color};border-radius:${br};"></div>`;
+        html += '</td>';
       } else {
-        cells += `<td class="sum-cell" style="${bl}"></td>`;
+        html += `<td style="min-width:52px;width:52px;height:32px;border:1px solid #eee;"></td>`;
       }
-    } else {
-      const active = m>=r.mStart && m<=r.mEnd;
-      if (active) {
-        const rs=m===r.mStart, re=m===r.mEnd;
-        const rad=`${rs?'3px':'0'} ${re?'3px':'0'} ${re?'3px':'0'} ${rs?'3px':'0'}`;
-        cells += `<td class="sum-cell" style="${bl}padding:4px 2px;">
-          <div style="height:14px;background:${r.color};border-radius:${rad};opacity:0.82;"></div></td>`;
-      } else {
-        cells += `<td class="sum-cell" style="${bl}"></td>`;
-      }
-    }
-  }
-  tr.innerHTML = cells;
-  summaryBody.appendChild(tr);
-});
+    });
+    html += '</tr>';
+  });
 
-// ─────────────────────────────────────────────────────────────────────────────
+  html += '</tbody></table>';
+  container.innerHTML = html;
+}
+
+// =============================================================
 // VIEW TOGGLE
-// ─────────────────────────────────────────────────────────────────────────────
-function switchView(view, btn) {
-  document.querySelectorAll('.view-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  document.getElementById('detail-view').style.display = view==='detail' ? 'block' : 'none';
-  document.getElementById('summary-view').style.display = view==='summary' ? 'block' : 'none';
+// =============================================================
+function showView(v) {
+  document.getElementById('view-detail').style.display = v === 'detail' ? 'block' : 'none';
+  document.getElementById('view-summary').style.display = v === 'summary' ? 'block' : 'none';
+  document.getElementById('btn-detail').classList.toggle('active', v === 'detail');
+  document.getElementById('btn-summary').classList.toggle('active', v === 'summary');
 }
+
+renderDetail();
+renderSummary();
+showView('detail');
 </script>
 </body>
 </html>
