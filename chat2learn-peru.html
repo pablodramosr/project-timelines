@@ -288,8 +288,8 @@ function renderMonthly(opts){
     { phase:"Preparation", label:"Teacher training", start:"2026-03-02", end:"2026-03-20", color:"prep", pct:100, note:"Teachers trained on Chat2Learn and the family enrollment process. First half of March." },
     { phase:"Preparation", label:"Family enrollment / WhatsApp registration", start:"2026-03-23", end:"2026-05-15", color:"prep", pct:90, note:"27 schools, ~2,100 families enrolled. Caregiver WhatsApp numbers collected through teachers." },
     { phase:"Preparation", label:"Baseline characterization survey", start:"2026-04-06", end:"2026-05-22", color:"prep", pct:70, note:"Survey administered via WhatsApp. Collects child demographics and caregiver education level. Used to stratify randomization." },
-    { phase:"Preparation", label:"IRB — UChicago (under review)*", start:"2026-05-04", end:"2026-07-08", color:"irb", pct:0, note:"WARNING: Submitted for review. Approval targeted for the beginning of the second week of July. UChicago approval is contingent on local IEP IRB approval." },
-    { phase:"Preparation", label:"IRB — IEP (under review)*", start:"2026-05-04", end:"2026-07-08", color:"irb", pct:0, note:"WARNING: Submitted for review. Approval targeted for the beginning of the second week of July. This is the binding constraint for program launch." },
+    { phase:"Preparation", label:"IRB — UChicago (under review)*", start:"2026-05-04", end:"2026-07-15", color:"irb", pct:0, note:"WARNING: Submitted for review. Approval targeted for mid-July. UChicago approval is contingent on local IEP IRB approval." },
+    { phase:"Preparation", label:"IRB — IEP (under review)*", start:"2026-05-04", end:"2026-07-15", color:"irb", pct:0, note:"WARNING: Submitted for review. Approval targeted for mid-July. This is the binding constraint for program launch." },
     { phase:"Preparation", label:"Consent form digitization and data cleaning", start:"2026-05-18", end:"2026-07-18", color:"prep", pct:0, note:"Digitization of paper consent forms and household database cleaning. Continues through mid-July, in parallel with the start of randomization." },
     { phase:"Preparation", label:"Randomization", start:"2026-07-06", end:"2026-07-17", color:"prep", pct:0, milestone:true },
 
@@ -309,7 +309,7 @@ function renderMonthly(opts){
   var MILESTONES = [
     { date:"2026-02-02", label:"Project start",       done:true,  risk:false, tip:"Formal start: UChicago-FyA agreements signed." },
     { date:"2026-03-02", label:"School engagement",   done:true,  risk:false, tip:"Teacher training begins. Family enrollment starts across 27 schools." },
-    { date:"2026-07-06", label:"Randomization",       done:false, risk:true,  tip:"Runs ~2 weeks (Jul 6-17). Follows IRB approvals, targeted for the beginning of the second week of July, and data cleaning. Launch follows the week of Jul 20." },
+    { date:"2026-07-06", label:"Randomization",       done:false, risk:true,  tip:"Runs ~2 weeks (Jul 6-17). Follows IRB approvals, targeted for mid-July, and data cleaning. Launch follows the week of Jul 20." },
     { date:"2026-07-20", label:"Program launch",      done:false, risk:false, tip:"Chat2Learn begins for treatment group. All enrolled caregivers per treated child receive messages." },
     { date:"2026-08-24", label:"$110k decision window opens", done:false, risk:false, fund:true, tip:"Doneer Effectief conditional allocation ($110k) tied to a usage study. Decision possible any time late Aug-Dec 2026. Preliminary engagement data from late August; richer data at midline (Oct-Dec). Part could fund a larger MIDIS data collection." },
     { date:"2026-10-05", label:"Midline data",        done:false, risk:false, tip:"First data collection wave. End-of-school-year timing." },
@@ -319,7 +319,7 @@ function renderMonthly(opts){
   ];
 
   var FOOTNOTES = [
-    "<span class='risk-note'>IRB (binding constraint):</span> UChicago and local IEP approvals are targeted for the beginning of the second week of July. UChicago approval is contingent on local IEP approval. This is the binding constraint for randomization and program launch.",
+    "<span class='risk-note'>IRB (binding constraint):</span> UChicago and local IEP approvals are targeted for mid-July. UChicago approval is contingent on local IEP approval. This is the binding constraint for randomization and program launch.",
     "<strong>Data cleaning:</strong> Digitization of paper consent forms continues through mid-July, in parallel with the start of randomization.",
     "<strong>Data collection instruments:</strong> Audio tasks and the phone survey are developed and piloted before the midline. A survey firm would be hired and trained only if caregiver outcomes are collected by phone (placeholder, mode to be confirmed).",
     "<span class='fund-note'>Funding ($110k conditional):</span> Doneer Effectief confirms $188k non-conditional for Jan 2026-Jun 2027. A further $110k could be allocated to C2L tied to a usage study, decided any time late Aug-Dec 2026. Part of those funds could instead support a larger MIDIS data collection.",
@@ -329,7 +329,7 @@ function renderMonthly(opts){
 
   var SUMMARY_WS = [
     { label:"Preparation", color:"prep", start:"2026-02-02", end:"2026-07-17" },
-    { label:"IRB reviews", color:"irb", start:"2026-05-04", end:"2026-07-08" },
+    { label:"IRB reviews", color:"irb", start:"2026-05-04", end:"2026-07-15" },
     { label:"Chat2Learn implementation", color:"impl", start:"2026-07-20", end:"2027-01-31" },
     { label:"Instrument prep & survey setup", color:"data", start:"2026-08-03", end:"2026-09-30" },
     { label:"Midline data collection", color:"data", start:"2026-10-05", end:"2026-12-18" },
