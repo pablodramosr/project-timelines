@@ -4,22 +4,20 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Chat2Learn Peru — Timelines</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Inter',sans-serif;background:#f8f9fa;color:#1a1a2e;font-size:13px}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;background:#f8f9fa;color:#33334D;font-size:13px}
 .page-wrap{max-width:1600px;margin:0 auto;padding:24px 20px}
 .header{margin-bottom:16px}
-.header h1{font-size:22px;font-weight:600;color:#1a1a2e;letter-spacing:-0.3px}
+.header h1{font-size:22px;font-weight:600;color:#33334D;letter-spacing:-0.3px}
 .header .subtitle{font-size:12px;color:#666;margin-top:4px}
-.header .subtitle span{color:#2d7d9a;font-weight:500}
+.header .subtitle span{color:#800000;font-weight:500}
 
 /* Tabs */
-.tabbar{display:flex;gap:4px;margin:18px 0 4px;border-bottom:2px solid #e8eaed}
-.tab{padding:9px 18px;border:none;background:none;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;color:#888;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .15s}
-.tab:hover{color:#2d7d9a}
-.tab.active{color:#2d7d9a;border-bottom-color:#2d7d9a}
+.tabbar{display:flex;gap:4px;margin:18px 0 4px;border-bottom:2px solid #e8eaed;flex-wrap:wrap}
+.tab{padding:9px 18px;border:none;background:none;font-family:inherit;font-size:13px;font-weight:600;color:#888;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .15s}
+.tab:hover{color:#800000}
+.tab.active{color:#800000;border-bottom-color:#800000}
 .tab-desc{font-size:11px;color:#999;margin:8px 0 14px}
 .tab-panel{display:none}
 .tab-panel.active{display:block}
@@ -27,39 +25,49 @@ body{font-family:'Inter',sans-serif;background:#f8f9fa;color:#1a1a2e;font-size:1
 
 /* Sub-toggle (internal) */
 .controls{display:flex;gap:8px;margin-bottom:14px;align-items:center}
-.toggle-btn{padding:7px 16px;border-radius:6px;border:1.5px solid #2d7d9a;background:#fff;color:#2d7d9a;font-family:'Inter',sans-serif;font-size:12px;font-weight:500;cursor:pointer;transition:all .15s}
-.toggle-btn.active{background:#2d7d9a;color:#fff}
+.toggle-btn{padding:7px 16px;border-radius:6px;border:1.5px solid #800000;background:#fff;color:#800000;font-family:inherit;font-size:12px;font-weight:500;cursor:pointer;transition:all .15s}
+.toggle-btn.active{background:#800000;color:#fff}
 
 .legend{display:flex;flex-wrap:wrap;gap:14px;margin-bottom:16px;align-items:center}
 .legend-item{display:flex;align-items:center;gap:6px;font-size:11px;color:#444}
 .legend-swatch{width:14px;height:14px;border-radius:3px;flex-shrink:0}
-.legend-diamond{width:10px;height:10px;transform:rotate(45deg);background:#1a1a2e;flex-shrink:0}
+.legend-diamond{width:10px;height:10px;transform:rotate(45deg);background:#800000;flex-shrink:0}
 .legend-diamond.risk{background:#e74c3c}
-.legend-diamond.fund{background:#d4af37}
-.chart-wrap{overflow-x:auto;border-radius:8px;box-shadow:0 1px 4px rgba(0,0,0,.08);background:#fff}
+.legend-diamond.fund{background:#E8830C}
+.legend-cur{width:14px;height:14px;border-radius:3px;background:#800000;flex-shrink:0}
+
+/* Scroll box so sticky headers have a container to stick within */
+.chart-wrap{max-height:72vh;overflow:auto;border-radius:8px;box-shadow:0 1px 4px rgba(0,0,0,.08);background:#fff;position:relative}
+.chart-inner{position:relative;width:max-content;min-width:100%}
 table{border-collapse:collapse;width:100%;min-width:700px}
-.task-col{min-width:220px;max-width:260px;position:sticky;left:0;background:#fff;z-index:10}
+.task-col{min-width:220px;max-width:260px;position:sticky;left:0;background:#fff;z-index:9}
 th{font-size:10px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:.5px;padding:8px 6px;border-bottom:2px solid #e8eaed;white-space:nowrap;text-align:center}
 th.task-col{text-align:left;padding-left:14px}
+/* Frozen panes: two sticky header rows + sticky corner */
+thead th{position:sticky;z-index:7}
+thead tr:first-child th{top:0}
+thead tr:last-child th{top:30px}
+thead th.task-col{top:0;z-index:12;background:transparent}
 td{border-bottom:1px solid #f0f2f4;vertical-align:middle;padding:0}
-td.task-col{padding:0 10px 0 14px;height:34px;position:sticky;left:0;background:#fff;z-index:9;border-right:1px solid #e8eaed}
+td.task-col{padding:0 10px 0 14px;height:34px;position:sticky;left:0;background:#fff;z-index:9;border-right:1px solid #e8eaed;overflow:hidden;text-overflow:ellipsis}
 .phase-label{font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;padding:10px 14px 4px;color:#aaa;background:#fff;position:sticky;left:0;z-index:9}
-.task-name{font-size:11.5px;color:#222;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:220px}
+.task-name{font-size:11.5px;color:#222;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:230px}
 .task-name.done{color:#999}
-.task-name .check{color:#27ae60;margin-right:3px}
+.task-name .check{color:#4C8C2B;margin-right:3px}
 .task-name .asterisk{color:#e74c3c;margin-left:2px;font-size:10px}
 .cell{position:relative;height:34px;min-width:18px}
 .month-group th{background:#f8f9fa;font-size:11px;font-weight:600;color:#555;text-transform:none;letter-spacing:0;padding:6px 0;border-bottom:1px solid #e8eaed;border-left:1px solid #e8eaed}
-.week-header{font-family:'IBM Plex Mono',monospace;font-size:9px;color:#bbb;font-weight:400;text-transform:none;letter-spacing:0;border-left:1px solid #f0f2f4}
-.month-header{font-family:'IBM Plex Mono',monospace;font-size:9px;color:#bbb;font-weight:400;text-transform:none;letter-spacing:0;border-left:1px solid #f0f2f4}
+.week-header{font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace;font-size:9px;color:#bbb;font-weight:400;text-transform:none;letter-spacing:0;border-left:1px solid #f0f2f4;background:#fff}
+.month-header{font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace;font-size:9px;color:#bbb;font-weight:400;text-transform:none;letter-spacing:0;border-left:1px solid #f0f2f4;background:#fff}
+.cur-col{background:#800000 !important;color:#fff !important;font-weight:700 !important}
+.col-highlight{position:absolute;top:0;bottom:0;background:rgba(128,0,0,0.10);z-index:1;pointer-events:none}
 .bar{position:absolute;top:6px;height:22px;border-radius:4px;z-index:2;cursor:default}
 .milestone-cell{position:relative;height:34px}
 .diamond{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(45deg);width:12px;height:12px;z-index:4;cursor:default}
-.diamond.done{opacity:.35}
+.diamond.done{opacity:.4}
 .month-divider{border-left:2px solid #e8eaed !important}
-.irb-bar{opacity:.78}
-.fund-bar{opacity:.55;background-image:repeating-linear-gradient(45deg,transparent,transparent 4px,rgba(255,255,255,.4) 4px,rgba(255,255,255,.4) 8px)}
-.tooltip{display:none;position:fixed;background:#1a1a2e;color:#fff;padding:9px 12px;border-radius:6px;font-size:11px;max-width:280px;line-height:1.5;z-index:9999;pointer-events:none;box-shadow:0 4px 12px rgba(0,0,0,.2)}
+.fund-bar{background-image:repeating-linear-gradient(45deg,transparent,transparent 4px,rgba(255,255,255,.45) 4px,rgba(255,255,255,.45) 8px)}
+.tooltip{display:none;position:fixed;background:#33334D;color:#fff;padding:9px 12px;border-radius:6px;font-size:11px;max-width:280px;line-height:1.5;z-index:9999;pointer-events:none;box-shadow:0 4px 12px rgba(0,0,0,.2)}
 .tooltip.visible{display:block}
 .footnotes{margin-top:22px;padding:16px 20px;background:#fff;border-radius:8px;box-shadow:0 1px 4px rgba(0,0,0,.08);font-size:11.5px;color:#555;line-height:1.7}
 .footnotes strong{color:#333}
@@ -86,23 +94,24 @@ td.task-col{padding:0 10px 0 14px;height:34px;position:sticky;left:0;background:
 
   <!-- ============ INTERNAL TAB ============ -->
   <div class="tab-panel active" id="panel-internal">
-    <div class="tab-desc">Working timeline for the team. IRB risk, task progress, and the conditional $110k funding decision. Toggle weekly detail or a compact monthly summary.</div>
+    <div class="tab-desc">Working timeline for the team. IRB status, task progress, and the conditional $110k funding decision. Toggle weekly detail or a compact monthly summary.</div>
     <div class="controls">
       <button class="toggle-btn active" id="btn-detailed" onclick="showInternalView('detailed')">Detailed (weekly)</button>
       <button class="toggle-btn" id="btn-summary" onclick="showInternalView('summary')">Summary (monthly)</button>
     </div>
     <div class="legend">
-      <div class="legend-item"><div class="legend-swatch" style="background:#2d7d9a"></div> Preparation</div>
-      <div class="legend-item"><div class="legend-swatch" style="background:#e74c3c"></div> IRB (at risk)</div>
-      <div class="legend-item"><div class="legend-swatch" style="background:#27ae60"></div> Implementation</div>
-      <div class="legend-item"><div class="legend-swatch" style="background:#e67e22"></div> Data Collection</div>
-      <div class="legend-item"><div class="legend-swatch" style="background:#8e44ad"></div> Long-run Follow-up</div>
+      <div class="legend-item"><div class="legend-swatch" style="background:#1AA179"></div> Preparation</div>
+      <div class="legend-item"><div class="legend-swatch" style="background:#33334D"></div> IRB</div>
+      <div class="legend-item"><div class="legend-swatch" style="background:#4C8C2B"></div> Implementation</div>
+      <div class="legend-item"><div class="legend-swatch" style="background:#2F6DB5"></div> Data Collection</div>
+      <div class="legend-item"><div class="legend-swatch" style="background:#7B4FA3"></div> Long-run Follow-up</div>
+      <div class="legend-item"><div class="legend-cur"></div> Current week</div>
       <div class="legend-item"><div class="legend-diamond"></div> Milestone</div>
       <div class="legend-item"><div class="legend-diamond risk"></div> At-risk milestone</div>
       <div class="legend-item"><div class="legend-diamond fund"></div> Funding decision</div>
-      <div class="legend-item" style="color:#aaa"><div class="legend-diamond" style="opacity:.35;background:#1a1a2e"></div> Completed milestone</div>
+      <div class="legend-item" style="color:#aaa"><div class="legend-diamond" style="opacity:.4"></div> Completed milestone</div>
       <div class="legend-item"><span style="color:#e74c3c;font-size:12px;font-weight:700">*</span>&nbsp;Note on hover</div>
-      <div class="legend-item"><span style="color:#27ae60;font-size:12px">✓</span>&nbsp;Task completed</div>
+      <div class="legend-item"><span style="color:#4C8C2B;font-size:12px">✓</span>&nbsp;Task completed</div>
     </div>
     <div id="internal-view-detailed"><div class="chart-wrap" id="internal-detailed-chart"></div></div>
     <div id="internal-view-summary" style="display:none"><div class="chart-wrap" id="internal-summary-chart"></div></div>
@@ -113,12 +122,14 @@ td.task-col{padding:0 10px 0 14px;height:34px;position:sticky;left:0;background:
   <div class="tab-panel" id="panel-pap">
     <div class="tab-desc">Clean study timeline for the pre-analysis plan and external partners. Monthly resolution, no internal risk or funding detail.</div>
     <div class="legend">
-      <div class="legend-item"><div class="legend-swatch" style="background:#2d7d9a"></div> Preparation</div>
-      <div class="legend-item"><div class="legend-swatch" style="background:#27ae60"></div> Implementation</div>
-      <div class="legend-item"><div class="legend-swatch" style="background:#e67e22"></div> Data Collection</div>
-      <div class="legend-item"><div class="legend-swatch" style="background:#8e44ad"></div> Long-run Follow-up</div>
+      <div class="legend-item"><div class="legend-swatch" style="background:#1AA179"></div> Preparation</div>
+      <div class="legend-item"><div class="legend-swatch" style="background:#4C8C2B"></div> Implementation</div>
+      <div class="legend-item"><div class="legend-swatch" style="background:#2F6DB5"></div> Data Collection</div>
+      <div class="legend-item"><div class="legend-swatch" style="background:#7B4FA3"></div> Long-run Follow-up</div>
+      <div class="legend-item"><div class="legend-cur"></div> Current month</div>
       <div class="legend-item"><div class="legend-diamond"></div> Milestone</div>
-      <div class="legend-item"><div class="legend-diamond" style="opacity:.35"></div> Completed milestone</div>
+      <div class="legend-item" style="color:#aaa"><div class="legend-diamond" style="opacity:.4"></div> Completed milestone</div>
+      <div class="legend-item"><span style="color:#e74c3c;font-size:12px;font-weight:700">*</span>&nbsp;Note on hover</div>
     </div>
     <div class="chart-wrap" id="pap-chart"></div>
     <div class="footnotes" id="pap-footnotes"></div>
@@ -129,13 +140,15 @@ td.task-col{padding:0 10px 0 14px;height:34px;position:sticky;left:0;background:
     <div class="draft-banner">DRAFT — suggested timeline, contingent on MOU and political conditions</div>
     <div class="tab-desc">Proposed path for the government (MIDIS) arm: MOU and technical note, scale-up by end of 2026, and a pilot RCT in 2027. Dates are planning targets.</div>
     <div class="legend">
-      <div class="legend-item"><div class="legend-swatch" style="background:#2d7d9a"></div> Agreement &amp; design</div>
-      <div class="legend-item"><div class="legend-swatch" style="background:#d4af37"></div> Funding decision window</div>
-      <div class="legend-item"><div class="legend-swatch" style="background:#27ae60"></div> Implementation at scale</div>
-      <div class="legend-item"><div class="legend-swatch" style="background:#e67e22"></div> Data collection</div>
-      <div class="legend-item"><div class="legend-swatch" style="background:#8e44ad"></div> Analysis</div>
+      <div class="legend-item"><div class="legend-swatch" style="background:#1AA179"></div> Agreement &amp; design</div>
+      <div class="legend-item"><div class="legend-swatch" style="background:#E8830C"></div> Funding decision window</div>
+      <div class="legend-item"><div class="legend-swatch" style="background:#4C8C2B"></div> Implementation at scale</div>
+      <div class="legend-item"><div class="legend-swatch" style="background:#2F6DB5"></div> Data collection</div>
+      <div class="legend-item"><div class="legend-swatch" style="background:#7B4FA3"></div> Analysis</div>
+      <div class="legend-item"><div class="legend-cur"></div> Current month</div>
       <div class="legend-item"><div class="legend-diamond"></div> Milestone</div>
       <div class="legend-item"><div class="legend-diamond fund"></div> Funding decision</div>
+      <div class="legend-item"><span style="color:#e74c3c;font-size:12px;font-weight:700">*</span>&nbsp;Note on hover</div>
     </div>
     <div class="chart-wrap" id="midis-chart"></div>
     <div class="footnotes" id="midis-footnotes"></div>
@@ -146,64 +159,74 @@ td.task-col{padding:0 10px 0 14px;height:34px;position:sticky;left:0;background:
 
 <script>
 // ═══════════════════════════════════════════════════════════════════════════
-//  SHARED
+//  SHARED  — DIL palette; all colors and dates editable below.
 // ═══════════════════════════════════════════════════════════════════════════
+var MAROON = "#800000";
 var COL = {
-  prep:   { s:"#2d7d9a", l:"#d4ecf7", d:"#a8cdd8" },
-  impl:   { s:"#27ae60", l:"#d5f5e3", d:"#a9dbbf" },
-  data:   { s:"#e67e22", l:"#fdebd0", d:"#f0c89a" },
-  follow: { s:"#8e44ad", l:"#e8daef", d:"#c7b3d5" },
-  irb:    { s:"#e74c3c", l:"#fde8e6", d:"#f0b3ae" },
-  fund:   { s:"#d4af37", l:"#f6edcf", d:"#cbb96a" }
+  prep:   { s:"#1AA179" },  // RCT & program prep / teal
+  impl:   { s:"#4C8C2B" },  // implementation / green
+  data:   { s:"#2F6DB5" },  // data collection / blue
+  follow: { s:"#7B4FA3" },  // analysis / purple
+  irb:    { s:"#33334D" },  // IRB / charcoal
+  fund:   { s:"#E8830C" }   // funding / gold
 };
 var MONTH_NAMES = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
 function parseDate(s){ return new Date(s + "T00:00:00"); }
 function addDays(d,n){ var r=new Date(d); r.setDate(r.getDate()+n); return r; }
 function mondayOf(d){ var day=d.getDay(); var diff=(day===0)?-6:1-day; return addDays(d,diff); }
 function clamp(v,lo,hi){ return Math.max(lo,Math.min(hi,v)); }
+function rgba(hex,a){ var r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16); return "rgba("+r+","+g+","+b+","+a+")"; }
+function mixWhite(hex,t){ var r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16); r=Math.round(r+(255-r)*t); g=Math.round(g+(255-g)*t); b=Math.round(b+(255-b)*t); return "#"+r.toString(16).padStart(2,"0")+g.toString(16).padStart(2,"0")+b.toString(16).padStart(2,"0"); }
 
 var tooltip = document.getElementById("tooltip");
-document.addEventListener("mousemove", function(e){
-  tooltip.style.left = (e.clientX + 14) + "px";
-  tooltip.style.top  = (e.clientY - 10) + "px";
-});
-function showTip(e,text){ tooltip.innerHTML = text; tooltip.classList.add("visible"); }
+document.addEventListener("mousemove", function(e){ tooltip.style.left=(e.clientX+14)+"px"; tooltip.style.top=(e.clientY-10)+"px"; });
+function showTip(e,text){ tooltip.innerHTML=text; tooltip.classList.add("visible"); }
 function hideTip(){ tooltip.classList.remove("visible"); }
 
-// Generic monthly renderer (used by PAP and MIDIS)
-function renderMonthly(opts){
-  var TSTART = parseDate(opts.start), TEND = parseDate(opts.end);
-  var months = [];
-  var cur = new Date(TSTART.getFullYear(), TSTART.getMonth(), 1);
-  var endM = new Date(TEND.getFullYear(), TEND.getMonth(), 1);
-  while (cur <= endM){ months.push(new Date(cur)); cur = new Date(cur.getFullYear(), cur.getMonth()+1, 1); }
-  var M = months.length;
-  function monthIdxOf(d){
-    var pd = parseDate(typeof d === "string" ? d : d.toISOString().slice(0,10));
-    for (var i=0;i<months.length;i++){ var nm=new Date(months[i].getFullYear(),months[i].getMonth()+1,1); if (pd<nm) return i; }
-    return M-1;
-  }
-  var years=[], yearMap={};
-  for (var i=0;i<months.length;i++){ var y=months[i].getFullYear(); if(!yearMap[y]){yearMap[y]=0;years.push(y);} yearMap[y]++; }
+// Auto current-week / current-month highlight: measured overlay over the live column.
+function addColHighlight(wrapId, cellId){
+  var cell=document.getElementById(cellId); if(!cell) return;
+  var inner=cell.closest(".chart-inner"); if(!inner) return;
+  var old=inner.querySelector(".col-highlight"); if(old) old.remove();
+  if (!cell.offsetWidth) return; // chart hidden; recompute when shown
+  var ov=document.createElement("div"); ov.className="col-highlight";
+  ov.style.left=cell.offsetLeft+"px"; ov.style.width=cell.offsetWidth+"px";
+  inner.appendChild(ov);
+}
 
-  var phases=[], phaseMap={};
+// Generic monthly renderer (PAP and MIDIS), with current-month highlight.
+function renderMonthly(opts){
+  var TSTART=parseDate(opts.start), TEND=parseDate(opts.end);
+  var months=[]; var cur=new Date(TSTART.getFullYear(),TSTART.getMonth(),1); var endM=new Date(TEND.getFullYear(),TEND.getMonth(),1);
+  while (cur<=endM){ months.push(new Date(cur)); cur=new Date(cur.getFullYear(),cur.getMonth()+1,1); }
+  var M=months.length;
+  function monthIdxOf(d){ var pd=(typeof d==="string")?parseDate(d):d; for(var i=0;i<months.length;i++){ var nm=new Date(months[i].getFullYear(),months[i].getMonth()+1,1); if(pd<nm) return i; } return M-1; }
+  var today=new Date(); var curMonth=(today>=TSTART && today<=TEND)?monthIdxOf(today):-1;
+
+  var years=[],yearMap={};
+  for (var i=0;i<months.length;i++){ var y=months[i].getFullYear(); if(!yearMap[y]){yearMap[y]=0;years.push(y);} yearMap[y]++; }
+  var phases=[],phaseMap={};
   for (var i=0;i<opts.tasks.length;i++){ var t=opts.tasks[i]; if(!phaseMap[t.phase]){phaseMap[t.phase]=[];phases.push(t.phase);} phaseMap[t.phase].push(t); }
 
-  var html = "<table><thead><tr><th class='task-col'>Task</th>";
+  var html="<div class='chart-inner'><table><thead><tr><th class='task-col'>Task</th>";
   for (var yi=0;yi<years.length;yi++){ html += "<th colspan='"+yearMap[years[yi]]+"' class='month-group month-divider'>"+years[yi]+"</th>"; }
   html += "</tr><tr><th class='task-col'></th>";
-  for (var mi=0;mi<M;mi++){ var cls=months[mi].getMonth()===0?"month-header month-divider":"month-header"; html += "<th class='"+cls+"' style='min-width:30px'>"+MONTH_NAMES[months[mi].getMonth()]+"</th>"; }
+  for (var mi=0;mi<M;mi++){
+    var cls=months[mi].getMonth()===0?"month-header month-divider":"month-header";
+    if (mi===curMonth){ html += "<th class='"+cls+" cur-col' id='"+opts.chartId+"-curcol' style='min-width:30px'>"+MONTH_NAMES[months[mi].getMonth()]+"</th>"; }
+    else { html += "<th class='"+cls+"' style='min-width:30px'>"+MONTH_NAMES[months[mi].getMonth()]+"</th>"; }
+  }
   html += "</tr></thead><tbody>";
 
-  // milestones
   var msByMonth={};
-  for (var k=0;k<opts.milestones.length;k++){ var ms=opts.milestones[k]; var idx=monthIdxOf(ms.date); if(!msByMonth[idx])msByMonth[idx]=[]; msByMonth[idx].push(ms); }
+  for (var k=0;k<opts.milestones.length;k++){ var ms=opts.milestones[k]; var idx=monthIdxOf(parseDate(ms.date)); if(!msByMonth[idx])msByMonth[idx]=[]; msByMonth[idx].push(ms); }
   html += "<tr style='background:#fafbfc'><td class='task-col' style='font-size:10px;color:#888;font-style:italic'>Milestones</td>";
   for (var mi=0;mi<M;mi++){
     if (msByMonth[mi]){
       var ms=msByMonth[mi][0];
-      var dc = ms.fund ? "#d4af37" : (ms.risk ? "#e74c3c" : "#1a1a2e");
-      var dop = ms.done ? "opacity:.35;" : "";
+      var dc = ms.fund ? "#E8830C" : (ms.risk ? "#e74c3c" : MAROON);
+      var dop = ms.done ? "opacity:.4;" : "";
       var tip = "<strong>"+ms.label+"</strong><br>"+(ms.tip||"");
       html += "<td class='milestone-cell' style='min-width:30px'><div class='diamond' style='background:"+dc+";"+dop+"' onmouseenter='showTip(event,\""+tip.replace(/"/g,"&quot;")+"\")' onmouseleave='hideTip()'></div></td>";
     } else { html += "<td class='cell' style='min-width:30px'></td>"; }
@@ -215,26 +238,26 @@ function renderMonthly(opts){
     html += "<tr><td colspan='"+(M+1)+"' class='phase-label'>"+pname.toUpperCase()+"</td></tr>";
     for (var ti=0;ti<ptasks.length;ti++){
       var task=ptasks[ti], col=COL[task.color];
-      var si=monthIdxOf(task.start), ei=monthIdxOf(task.end), span=ei-si+1;
+      var si=monthIdxOf(parseDate(task.start)), ei=monthIdxOf(parseDate(task.end)), span=ei-si+1;
       var tip2=task.tip?task.tip:"";
-      var isFund = task.color==="fund";
-      html += "<tr><td class='task-col'><div class='task-name' onmouseenter='showTip(event,\""+tip2.replace(/"/g,"&quot;")+"\")' onmouseleave='hideTip()'>"+task.label+"</div></td>";
+      var isFund=task.color==="fund";
+      var nm = task.label + (tip2 ? "<span class='asterisk'>*</span>" : "");
+      html += "<tr><td class='task-col'><div class='task-name'"+(tip2?" onmouseenter='showTip(event,\""+tip2.replace(/"/g,"&quot;")+"\")' onmouseleave='hideTip()'":"")+">"+nm+"</div></td>";
       for (var mi=0;mi<M;mi++){
         if (mi===si){
-          html += "<td class='cell' colspan='"+span+"' style='position:relative;min-width:30px'>";
-          html += "<div class='bar"+(isFund?" fund-bar":"")+"' style='left:0;width:100%;background:"+col.s+"'></div>";
-          html += "</td>";
+          html += "<td class='cell' colspan='"+span+"' style='position:relative;min-width:30px'><div class='bar"+(isFund?" fund-bar":"")+"' style='left:0;width:100%;background:"+col.s+"'></div></td>";
           mi += span-1;
         } else { html += "<td class='cell' style='min-width:30px'></td>"; }
       }
       html += "</tr>";
     }
   }
-  html += "</tbody></table>";
+  html += "</tbody></table></div>";
   document.getElementById(opts.chartId).innerHTML = html;
+  addColHighlight(opts.chartId, opts.chartId+"-curcol");
 
   if (opts.footnotes){
-    var fn = "<strong>Notes</strong><ol style='margin-top:8px;padding-left:18px'>";
+    var fn="<strong>Notes</strong><ol style='margin-top:8px;padding-left:18px'>";
     for (var i=0;i<opts.footnotes.length;i++){ fn += "<li style='margin-bottom:5px'>"+opts.footnotes[i]+"</li>"; }
     fn += "</ol>";
     document.getElementById(opts.footId).innerHTML = fn;
@@ -289,7 +312,7 @@ function renderMonthly(opts){
 
   var SUMMARY_WS = [
     { label:"Preparation", color:"prep", start:"2026-02-02", end:"2026-07-17" },
-    { label:"IRB reviews (at risk)", color:"irb", start:"2026-05-04", end:"2026-07-08" },
+    { label:"IRB reviews", color:"irb", start:"2026-05-04", end:"2026-07-08" },
     { label:"Chat2Learn implementation", color:"impl", start:"2026-07-20", end:"2027-01-31" },
     { label:"Midline data collection", color:"data", start:"2026-10-05", end:"2026-12-18" },
     { label:"Endline data collection", color:"data", start:"2027-01-05", end:"2027-03-15" },
@@ -307,32 +330,35 @@ function renderMonthly(opts){
     { date:"2027-01-31", label:"Pgm end",   done:false, risk:false }
   ];
 
-  var TSTART = new Date("2026-02-02"), TEND = new Date("2030-12-31");
+  var TSTART=new Date("2026-02-02"), TEND=new Date("2030-12-31");
   function buildWeeks(){ var w=[],cur=mondayOf(TSTART); while(cur<=TEND){ w.push(new Date(cur)); cur=addDays(cur,7);} return w; }
-  function buildMonths(weeks){ var m=[],cur=null; for(var i=0;i<weeks.length;i++){var wk=weeks[i];var key=wk.getFullYear()+"-"+wk.getMonth();if(!cur||cur.key!==key){cur={key:key,year:wk.getFullYear(),month:wk.getMonth(),startIdx:i,count:0};m.push(cur);}cur.count++;} return m; }
+  function buildMonths(weeks){ var m=[],cur=null; for(var i=0;i<weeks.length;i++){var wk=weeks[i];var key=wk.getFullYear()+"-"+wk.getMonth();if(!cur||cur.key!==key){cur={key:key,year:wk.getFullYear(),month:wk.getMonth(),count:0};m.push(cur);}cur.count++;} return m; }
   function weekIdx(weeks,d){ var t=d.getTime(); for(var i=0;i<weeks.length;i++){ if(t<addDays(weeks[i],7).getTime()) return i;} return weeks.length-1; }
 
   function buildDetailed(){
     var weeks=buildWeeks(), months=buildMonths(weeks), W=weeks.length;
+    var today=new Date(); var curWeek=(today>=TSTART && today<=TEND)?weekIdx(weeks,today):-1;
     var phases=[],phaseMap={};
     for (var i=0;i<TASKS.length;i++){ var t=TASKS[i]; if(!phaseMap[t.phase]){phaseMap[t.phase]=[];phases.push(t.phase);} phaseMap[t.phase].push(t); }
-    var html="<table><thead><tr><th class='task-col' rowspan='2'>Task</th>";
+
+    var html="<div class='chart-inner'><table><thead><tr><th class='task-col' rowspan='2'>Task</th>";
     for (var m=0;m<months.length;m++){ var mo=months[m]; html += "<th colspan='"+mo.count+"' class='month-group month-divider'>"+MONTH_NAMES[mo.month]+" "+mo.year+"</th>"; }
     html += "</tr><tr>";
-    for (var wi=0;wi<W;wi++){ var wk=weeks[wi]; var isFirst=(wk.getDate()<=7)||(wi===0); var c=isFirst?"week-header month-divider":"week-header"; html += "<th class='"+c+"'>"+wk.getDate()+"</th>"; }
+    for (var wi=0;wi<W;wi++){ var wk=weeks[wi]; var isFirst=(wk.getDate()<=7)||(wi===0); var c=isFirst?"week-header month-divider":"week-header"; if(wi===curWeek){ html += "<th class='"+c+" cur-col' id='int-curcol'>"+wk.getDate()+"</th>"; } else { html += "<th class='"+c+"'>"+wk.getDate()+"</th>"; } }
     html += "</tr></thead><tbody>";
 
     var msByWeek={};
     for (var mi=0;mi<MILESTONES.length;mi++){ var ms=MILESTONES[mi]; var mwi=weekIdx(weeks,parseDate(ms.date)); if(!msByWeek[mwi])msByWeek[mwi]=[]; msByWeek[mwi].push(ms); }
     html += "<tr style='background:#fafbfc'><td class='task-col' style='font-size:10px;font-weight:600;color:#888;font-style:italic'>Milestones</td>";
     for (var wi=0;wi<W;wi++){
+      var secTint = (wi===curWeek) ? "background:#efd6d6;" : "";
       if (msByWeek[wi]){
         var ms=msByWeek[wi][0];
-        var dcolor = ms.fund ? "#d4af37" : (ms.risk ? "#e74c3c" : "#1a1a2e");
-        var dop = ms.done ? "opacity:.35;" : "";
+        var dcolor = ms.fund ? "#E8830C" : (ms.risk ? "#e74c3c" : MAROON);
+        var dop = ms.done ? "opacity:.4;" : "";
         var tip = "<strong>"+ms.label+"</strong><br>"+ms.tip;
-        html += "<td class='milestone-cell'><div class='diamond' style='background:"+dcolor+";"+dop+"' onmouseenter='showTip(event,\""+tip.replace(/"/g,"&quot;")+"\")' onmouseleave='hideTip()'></div></td>";
-      } else { html += "<td class='cell'></td>"; }
+        html += "<td class='milestone-cell' style='"+secTint+"'><div class='diamond' style='background:"+dcolor+";"+dop+"' onmouseenter='showTip(event,\""+tip.replace(/"/g,"&quot;")+"\")' onmouseleave='hideTip()'></div></td>";
+      } else { html += "<td class='cell' style='"+secTint+"'></td>"; }
     }
     html += "</tr>";
 
@@ -342,7 +368,7 @@ function renderMonthly(opts){
       for (var ti=0;ti<ptasks.length;ti++){
         var task=ptasks[ti], col=COL[task.color];
         var si=clamp(weekIdx(weeks,parseDate(task.start)),0,W-1), ei=clamp(weekIdx(weeks,parseDate(task.end)),0,W-1), span=ei-si+1;
-        var isDone=task.pct===100, hasNote=task.note&&task.note.length>0, isIRB=task.color==="irb";
+        var isDone=task.pct===100, hasNote=task.note&&task.note.length>0;
         var taskLabel=(isDone?"<span class='check'>✓</span>":"")+task.label+(hasNote?"<span class='asterisk'>*</span>":"");
         var nameClass=isDone?"task-name done":"task-name";
         var ttext=""; if(hasNote)ttext+=task.note; if(task.pct!==undefined&&task.pct>0&&!isDone)ttext+=(ttext?"<br>":"")+"Progress: "+task.pct+"%";
@@ -351,15 +377,14 @@ function renderMonthly(opts){
         html += ">"+taskLabel+"</div></td>";
         for (var wi=0;wi<W;wi++){
           if (wi===si){
-            var barColor=isDone?col.d:col.s;
             html += "<td class='cell' colspan='"+span+"' style='position:relative'>";
             if (task.pct!==undefined&&task.pct>0&&task.pct<100){
-              html += "<div style='position:absolute;top:6px;height:22px;left:0;width:100%;border-radius:4px;background:"+col.l+";z-index:1'></div>";
+              html += "<div style='position:absolute;top:6px;height:22px;left:0;width:100%;border-radius:4px;background:"+rgba(col.s,0.15)+";z-index:1'></div>";
               html += "<div style='position:absolute;top:6px;height:22px;left:0;width:"+task.pct+"%;border-radius:4px;background:"+col.s+";z-index:2'></div>";
               html += "<span style='position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:10px;font-weight:600;color:#fff;z-index:3;text-shadow:0 1px 2px rgba(0,0,0,.3);white-space:nowrap'>"+task.pct+"%</span>";
             } else {
-              html += "<div class='bar"+(isIRB?" irb-bar":"")+"' style='left:0;width:100%;background:"+barColor+"'></div>";
-              if (isDone) html += "<span style='position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:10px;font-weight:600;color:#fff;z-index:3;text-shadow:0 1px 2px rgba(0,0,0,.3);white-space:nowrap'>Done</span>";
+              var barColor = isDone ? mixWhite(col.s,0.72) : col.s;
+              html += "<div class='bar' style='left:0;width:100%;background:"+barColor+"'></div>";
             }
             html += "</td>";
             wi += span-1;
@@ -368,41 +393,45 @@ function renderMonthly(opts){
         html += "</tr>";
       }
     }
-    html += "</tbody></table>";
+    html += "</tbody></table></div>";
     document.getElementById("internal-detailed-chart").innerHTML = html;
+    addColHighlight("internal-detailed-chart","int-curcol");
   }
 
   function buildSummary(){
     var allMonths=[], cur=new Date(TSTART.getFullYear(),TSTART.getMonth(),1), endM=new Date(TEND.getFullYear(),TEND.getMonth(),1);
     while (cur<=endM){ allMonths.push(new Date(cur)); cur=new Date(cur.getFullYear(),cur.getMonth()+1,1); }
     var M=allMonths.length;
-    function monthIdxOf(d){ var pd=parseDate(typeof d==="string"?d:d.toISOString().slice(0,10)); for(var i=0;i<allMonths.length;i++){var nm=new Date(allMonths[i].getFullYear(),allMonths[i].getMonth()+1,1); if(pd<nm) return i;} return M-1; }
+    function monthIdxOf(d){ var pd=(typeof d==="string")?parseDate(d):d; for(var i=0;i<allMonths.length;i++){var nm=new Date(allMonths[i].getFullYear(),allMonths[i].getMonth()+1,1); if(pd<nm) return i;} return M-1; }
+    var today=new Date(); var curMonth=(today>=TSTART && today<=TEND)?monthIdxOf(today):-1;
     var years=[],yearMap={};
     for (var i=0;i<allMonths.length;i++){ var y=allMonths[i].getFullYear(); if(!yearMap[y]){yearMap[y]=0;years.push(y);} yearMap[y]++; }
-    var html="<table><thead><tr><th class='task-col'>Workstream</th>";
+    var html="<div class='chart-inner'><table><thead><tr><th class='task-col'>Workstream</th>";
     for (var yi=0;yi<years.length;yi++){ html += "<th colspan='"+yearMap[years[yi]]+"' class='month-group month-divider'>"+years[yi]+"</th>"; }
     html += "</tr><tr><th class='task-col'></th>";
-    for (var mi=0;mi<M;mi++){ var cls=allMonths[mi].getMonth()===0?"week-header month-divider":"week-header"; html += "<th class='"+cls+"' style='min-width:32px'>"+MONTH_NAMES[allMonths[mi].getMonth()]+"</th>"; }
+    for (var mi=0;mi<M;mi++){ var cls=allMonths[mi].getMonth()===0?"month-header month-divider":"month-header"; if(mi===curMonth){ html += "<th class='"+cls+" cur-col' id='int-sum-curcol' style='min-width:32px'>"+MONTH_NAMES[allMonths[mi].getMonth()]+"</th>"; } else { html += "<th class='"+cls+"' style='min-width:32px'>"+MONTH_NAMES[allMonths[mi].getMonth()]+"</th>"; } }
     html += "</tr></thead><tbody>";
     var msByMonth={};
-    for (var k=0;k<SUMMARY_MS.length;k++){ var ms=SUMMARY_MS[k]; var idx=monthIdxOf(ms.date); if(!msByMonth[idx])msByMonth[idx]=[]; msByMonth[idx].push(ms); }
+    for (var k=0;k<SUMMARY_MS.length;k++){ var ms=SUMMARY_MS[k]; var idx=monthIdxOf(parseDate(ms.date)); if(!msByMonth[idx])msByMonth[idx]=[]; msByMonth[idx].push(ms); }
     html += "<tr style='background:#fafbfc'><td class='task-col' style='font-size:10px;color:#888;font-style:italic'>Milestones</td>";
     for (var mi=0;mi<M;mi++){
-      if (msByMonth[mi]){ var ms=msByMonth[mi][0]; var dc=ms.fund?"#d4af37":(ms.risk?"#e74c3c":"#1a1a2e"); var dop=ms.done?"opacity:.35;":""; html += "<td class='milestone-cell' style='min-width:32px'><div class='diamond' style='background:"+dc+";"+dop+"'></div></td>"; }
-      else { html += "<td class='cell' style='min-width:32px'></td>"; }
+      var secTint=(mi===curMonth)?"background:#efd6d6;":"";
+      if (msByMonth[mi]){ var ms=msByMonth[mi][0]; var dc=ms.fund?"#E8830C":(ms.risk?"#e74c3c":MAROON); var dop=ms.done?"opacity:.4;":""; html += "<td class='milestone-cell' style='min-width:32px;"+secTint+"'><div class='diamond' style='background:"+dc+";"+dop+"'></div></td>"; }
+      else { html += "<td class='cell' style='min-width:32px;"+secTint+"'></td>"; }
     }
     html += "</tr>";
     for (var wi=0;wi<SUMMARY_WS.length;wi++){
-      var ws=SUMMARY_WS[wi], col=COL[ws.color], si=monthIdxOf(ws.start), ei=monthIdxOf(ws.end), span=ei-si+1, isIRB=ws.color==="irb";
+      var ws=SUMMARY_WS[wi], col=COL[ws.color], si=monthIdxOf(parseDate(ws.start)), ei=monthIdxOf(parseDate(ws.end)), span=ei-si+1;
       html += "<tr><td class='task-col'><div class='task-name'>"+ws.label+"</div></td>";
       for (var mi=0;mi<M;mi++){
-        if (mi===si){ html += "<td class='cell' colspan='"+span+"' style='position:relative;min-width:32px'><div class='bar"+(isIRB?" irb-bar":"")+"' style='left:0;width:100%;background:"+col.s+"'></div></td>"; mi += span-1; }
+        if (mi===si){ html += "<td class='cell' colspan='"+span+"' style='position:relative;min-width:32px'><div class='bar' style='left:0;width:100%;background:"+col.s+"'></div></td>"; mi += span-1; }
         else { html += "<td class='cell' style='min-width:32px'></td>"; }
       }
       html += "</tr>";
     }
-    html += "</tbody></table>";
+    html += "</tbody></table></div>";
     document.getElementById("internal-summary-chart").innerHTML = html;
+    addColHighlight("internal-summary-chart","int-sum-curcol");
   }
 
   function buildFoot(){
@@ -417,6 +446,8 @@ function renderMonthly(opts){
     document.getElementById("internal-view-summary").style.display  = v==="summary"?"block":"none";
     document.getElementById("btn-detailed").classList.toggle("active", v==="detailed");
     document.getElementById("btn-summary").classList.toggle("active",  v==="summary");
+    if (v==="summary") addColHighlight("internal-summary-chart","int-sum-curcol");
+    else addColHighlight("internal-detailed-chart","int-curcol");
   };
 
   buildDetailed(); buildSummary(); buildFoot();
@@ -495,14 +526,20 @@ renderMonthly({
 });
 
 // ═══════════════════════════════════════════════════════════════════════════
-//  TABS
+//  TABS  — recompute highlights on first reveal so offsets are correct.
 // ═══════════════════════════════════════════════════════════════════════════
 function switchTab(name){
-  var tabs = ["internal","pap","midis"];
+  var tabs=["internal","pap","midis"];
   for (var i=0;i<tabs.length;i++){
     var t=tabs[i];
     document.getElementById("panel-"+t).classList.toggle("active", t===name);
     document.getElementById("tab-"+t).classList.toggle("active", t===name);
+  }
+  if (name==="pap") addColHighlight("pap-chart","pap-chart-curcol");
+  else if (name==="midis") addColHighlight("midis-chart","midis-chart-curcol");
+  else if (name==="internal"){
+    if (document.getElementById("internal-view-summary").style.display!=="none") addColHighlight("internal-summary-chart","int-sum-curcol");
+    else addColHighlight("internal-detailed-chart","int-curcol");
   }
 }
 </script>
