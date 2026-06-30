@@ -41,13 +41,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Ar
 .chart-inner{position:relative;width:max-content;min-width:100%}
 table{border-collapse:collapse;width:100%;min-width:700px}
 .task-col{min-width:220px;max-width:260px;position:sticky;left:0;background:#fff;z-index:9}
-th{font-size:10px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:.5px;padding:8px 6px;border-bottom:2px solid #e8eaed;white-space:nowrap;text-align:center}
+th{font-size:10px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:.5px;padding:8px 6px;border-bottom:2px solid #e8eaed;white-space:nowrap;text-align:center;background:#fff}
 th.task-col{text-align:left;padding-left:14px}
-/* Frozen panes: two sticky header rows + sticky corner */
-thead th{position:sticky;z-index:7}
+/* Frozen panes: two sticky header rows (opaque white) + sticky corner */
+thead th{position:sticky;z-index:7;background:#fff}
 thead tr:first-child th{top:0}
 thead tr:last-child th{top:30px}
-thead th.task-col{top:0;z-index:12;background:transparent}
+thead th.task-col{top:0;z-index:12;background:#fff}
 td{border-bottom:1px solid #f0f2f4;vertical-align:middle;padding:0}
 td.task-col{padding:0 10px 0 14px;height:34px;position:sticky;left:0;background:#fff;z-index:9;border-right:1px solid #e8eaed;overflow:hidden;text-overflow:ellipsis}
 .phase-label{font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;padding:10px 14px 4px;color:#aaa;background:#fff;position:sticky;left:0;z-index:9}
@@ -56,11 +56,13 @@ td.task-col{padding:0 10px 0 14px;height:34px;position:sticky;left:0;background:
 .task-name .check{color:#4C8C2B;margin-right:3px}
 .task-name .asterisk{color:#e74c3c;margin-left:2px;font-size:10px}
 .cell{position:relative;height:34px;min-width:18px}
-.month-group th{background:#f8f9fa;font-size:11px;font-weight:600;color:#555;text-transform:none;letter-spacing:0;padding:6px 0;border-bottom:1px solid #e8eaed;border-left:1px solid #e8eaed}
-.week-header{font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace;font-size:9px;color:#bbb;font-weight:400;text-transform:none;letter-spacing:0;border-left:1px solid #f0f2f4;background:#fff}
-.month-header{font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace;font-size:9px;color:#bbb;font-weight:400;text-transform:none;letter-spacing:0;border-left:1px solid #f0f2f4;background:#fff}
+.month-group th{font-size:11px;font-weight:600;color:#555;text-transform:none;letter-spacing:0;padding:6px 0;border-bottom:1px solid #e8eaed;border-left:1px solid #e8eaed}
+.week-header{font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace;font-size:9px;color:#bbb;font-weight:400;text-transform:none;letter-spacing:0;border-left:1px solid #f0f2f4}
+.month-header{font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace;font-size:9px;color:#bbb;font-weight:400;text-transform:none;letter-spacing:0;border-left:1px solid #f0f2f4}
 .cur-col{background:#800000 !important;color:#fff !important;font-weight:700 !important}
 .col-highlight{position:absolute;top:0;bottom:0;background:rgba(128,0,0,0.10);z-index:1;pointer-events:none}
+.tail-head{border-left:2px solid #d8d8de;color:#777;font-style:italic}
+.tail-cell{background:#fafbfc;border-left:2px solid #d8d8de}
 .bar{position:absolute;top:6px;height:22px;border-radius:4px;z-index:2;cursor:default}
 .milestone-cell{position:relative;height:34px}
 .diamond{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(45deg);width:12px;height:12px;z-index:4;cursor:default}
@@ -160,8 +162,12 @@ td.task-col{padding:0 10px 0 14px;height:34px;position:sticky;left:0;background:
 <script>
 // ═══════════════════════════════════════════════════════════════════════════
 //  SHARED  — DIL palette; all colors and dates editable below.
+//  Timeline axis stops at AXIS_END; anything later collapses into one "2028 onward" column.
 // ═══════════════════════════════════════════════════════════════════════════
 var MAROON = "#800000";
+var AXIS_END = new Date("2027-12-31T00:00:00");
+var TAIL_YEAR_LABEL = "2028 onward";
+var TAIL_CELL_LABEL = "2028+";
 var COL = {
   prep:   { s:"#1AA179" },  // RCT & program prep / teal
   impl:   { s:"#4C8C2B" },  // implementation / green
@@ -195,14 +201,18 @@ function addColHighlight(wrapId, cellId){
   inner.appendChild(ov);
 }
 
-// Generic monthly renderer (PAP and MIDIS), with current-month highlight.
+// Generic monthly renderer (PAP and MIDIS), with current-month highlight and a 2028+ tail.
 function renderMonthly(opts){
-  var TSTART=parseDate(opts.start), TEND=parseDate(opts.end);
-  var months=[]; var cur=new Date(TSTART.getFullYear(),TSTART.getMonth(),1); var endM=new Date(TEND.getFullYear(),TEND.getMonth(),1);
+  var TSTART=parseDate(opts.start), realEnd=parseDate(opts.end);
+  var hasTail = realEnd > AXIS_END;
+  var capEnd = hasTail ? AXIS_END : realEnd;
+  var months=[]; var cur=new Date(TSTART.getFullYear(),TSTART.getMonth(),1); var endM=new Date(capEnd.getFullYear(),capEnd.getMonth(),1);
   while (cur<=endM){ months.push(new Date(cur)); cur=new Date(cur.getFullYear(),cur.getMonth()+1,1); }
-  var M=months.length;
-  function monthIdxOf(d){ var pd=(typeof d==="string")?parseDate(d):d; for(var i=0;i<months.length;i++){ var nm=new Date(months[i].getFullYear(),months[i].getMonth()+1,1); if(pd<nm) return i; } return M-1; }
-  var today=new Date(); var curMonth=(today>=TSTART && today<=TEND)?monthIdxOf(today):-1;
+  var M=months.length, COLS=M+(hasTail?1:0);
+  function monthIdxOf(d){ var pd=(typeof d==="string")?parseDate(d):d; if(hasTail && pd>AXIS_END) return M; for(var i=0;i<M;i++){ var nm=new Date(months[i].getFullYear(),months[i].getMonth()+1,1); if(pd<nm) return i; } return M-1; }
+  function mw(i){ return (hasTail && i===M) ? 64 : 30; }
+  var today=new Date(); var curMonth=-1;
+  if (today>=TSTART && today<=realEnd) curMonth=monthIdxOf(today);
 
   var years=[],yearMap={};
   for (var i=0;i<months.length;i++){ var y=months[i].getFullYear(); if(!yearMap[y]){yearMap[y]=0;years.push(y);} yearMap[y]++; }
@@ -211,31 +221,34 @@ function renderMonthly(opts){
 
   var html="<div class='chart-inner'><table><thead><tr><th class='task-col'>Task</th>";
   for (var yi=0;yi<years.length;yi++){ html += "<th colspan='"+yearMap[years[yi]]+"' class='month-group month-divider'>"+years[yi]+"</th>"; }
+  if (hasTail) html += "<th class='month-group tail-head'>"+TAIL_YEAR_LABEL+"</th>";
   html += "</tr><tr><th class='task-col'></th>";
   for (var mi=0;mi<M;mi++){
     var cls=months[mi].getMonth()===0?"month-header month-divider":"month-header";
     if (mi===curMonth){ html += "<th class='"+cls+" cur-col' id='"+opts.chartId+"-curcol' style='min-width:30px'>"+MONTH_NAMES[months[mi].getMonth()]+"</th>"; }
     else { html += "<th class='"+cls+"' style='min-width:30px'>"+MONTH_NAMES[months[mi].getMonth()]+"</th>"; }
   }
+  if (hasTail){ var tcls="month-header tail-head"+(curMonth===M?" cur-col":""); var tid=(curMonth===M?" id='"+opts.chartId+"-curcol'":""); html += "<th class='"+tcls+"'"+tid+" style='min-width:64px'>"+TAIL_CELL_LABEL+"</th>"; }
   html += "</tr></thead><tbody>";
 
   var msByMonth={};
   for (var k=0;k<opts.milestones.length;k++){ var ms=opts.milestones[k]; var idx=monthIdxOf(parseDate(ms.date)); if(!msByMonth[idx])msByMonth[idx]=[]; msByMonth[idx].push(ms); }
   html += "<tr style='background:#fafbfc'><td class='task-col' style='font-size:10px;color:#888;font-style:italic'>Milestones</td>";
-  for (var mi=0;mi<M;mi++){
+  for (var mi=0;mi<COLS;mi++){
+    var tailC=(hasTail&&mi===M)?" tail-cell":"";
     if (msByMonth[mi]){
       var ms=msByMonth[mi][0];
       var dc = ms.fund ? "#E8830C" : (ms.risk ? "#e74c3c" : MAROON);
       var dop = ms.done ? "opacity:.4;" : "";
       var tip = "<strong>"+ms.label+"</strong><br>"+(ms.tip||"");
-      html += "<td class='milestone-cell' style='min-width:30px'><div class='diamond' style='background:"+dc+";"+dop+"' onmouseenter='showTip(event,\""+tip.replace(/"/g,"&quot;")+"\")' onmouseleave='hideTip()'></div></td>";
-    } else { html += "<td class='cell' style='min-width:30px'></td>"; }
+      html += "<td class='milestone-cell"+tailC+"' style='min-width:"+mw(mi)+"px'><div class='diamond' style='background:"+dc+";"+dop+"' onmouseenter='showTip(event,\""+tip.replace(/"/g,"&quot;")+"\")' onmouseleave='hideTip()'></div></td>";
+    } else { html += "<td class='cell"+tailC+"' style='min-width:"+mw(mi)+"px'></td>"; }
   }
   html += "</tr>";
 
   for (var pi=0;pi<phases.length;pi++){
     var pname=phases[pi], ptasks=phaseMap[pname];
-    html += "<tr><td colspan='"+(M+1)+"' class='phase-label'>"+pname.toUpperCase()+"</td></tr>";
+    html += "<tr><td colspan='"+(COLS+1)+"' class='phase-label'>"+pname.toUpperCase()+"</td></tr>";
     for (var ti=0;ti<ptasks.length;ti++){
       var task=ptasks[ti], col=COL[task.color];
       var si=monthIdxOf(parseDate(task.start)), ei=monthIdxOf(parseDate(task.end)), span=ei-si+1;
@@ -243,11 +256,12 @@ function renderMonthly(opts){
       var isFund=task.color==="fund";
       var nm = task.label + (tip2 ? "<span class='asterisk'>*</span>" : "");
       html += "<tr><td class='task-col'><div class='task-name'"+(tip2?" onmouseenter='showTip(event,\""+tip2.replace(/"/g,"&quot;")+"\")' onmouseleave='hideTip()'":"")+">"+nm+"</div></td>";
-      for (var mi=0;mi<M;mi++){
+      for (var mi=0;mi<COLS;mi++){
+        var tailC=(hasTail&&mi===M)?" tail-cell":"";
         if (mi===si){
-          html += "<td class='cell' colspan='"+span+"' style='position:relative;min-width:30px'><div class='bar"+(isFund?" fund-bar":"")+"' style='left:0;width:100%;background:"+col.s+"'></div></td>";
+          html += "<td class='cell"+tailC+"' colspan='"+span+"' style='position:relative;min-width:"+mw(mi)+"px'><div class='bar"+(isFund?" fund-bar":"")+"' style='left:0;width:100%;background:"+col.s+"'></div></td>";
           mi += span-1;
-        } else { html += "<td class='cell' style='min-width:30px'></td>"; }
+        } else { html += "<td class='cell"+tailC+"' style='min-width:"+mw(mi)+"px'></td>"; }
       }
       html += "</tr>";
     }
@@ -282,12 +296,13 @@ function renderMonthly(opts){
     { phase:"Implementation", label:"Chat2Learn active (treatment group)", start:"2026-07-20", end:"2027-01-31", color:"impl", pct:0, note:"~6 months of Chat2Learn via WhatsApp. Up to 5 illustrated prompts per week. All enrolled caregivers per treated child receive messages. Control group: business as usual. Program continues through school break (Nov-Jan) -- summer period may yield strongest treatment effects as counterfactual for children is minimal stimulation." },
     { phase:"Implementation", label:"Platform engagement data collection", start:"2026-07-20", end:"2027-01-31", color:"impl", pct:0, note:"Continuous tracking: message delivery rates, read latency, response rate, session frequency and length. Utility vs. marketing message classification monitored via EngageSpark." },
 
+    { phase:"Data Collection", label:"Instrument development & testing", start:"2026-08-03", end:"2026-09-30", color:"data", pct:0, note:"Design and pilot the data collection instruments: WhatsApp audio elicitation tasks and the phone survey. Includes cognitive testing and field piloting before the midline." },
+    { phase:"Data Collection", label:"Survey firm hiring & training (if phone survey)*", start:"2026-09-01", end:"2026-09-30", color:"data", pct:0, note:"PLACEHOLDER. If caregiver outcomes are collected via a phone survey, contract a survey firm and train enumerators. Conditional on the final data collection mode." },
     { phase:"Data Collection", label:"Midline data collection (end of school year)", start:"2026-10-05", end:"2026-12-18", color:"data", pct:0, note:"First data collection wave. End-of-school-year timing leverages teacher networks for legitimacy and parent outreach. Includes WhatsApp audio tasks (child language samples, caregiver-child recordings) and phone survey. Incentivized (~S/5 per task)." },
     { phase:"Data Collection", label:"Endline data collection (post-summer break)", start:"2027-01-05", end:"2027-03-15", color:"data", pct:0, note:"Second data collection wave. Captures post-summer outcomes to test whether Chat2Learn mitigates the 'summer slide' -- a period where control children have minimal stimulation. Audio tasks and phone survey. School enrollment not required to reach families." },
-    { phase:"Data Collection", label:"Audio processing and AI coding", start:"2026-11-02", end:"2027-04-30", color:"data", pct:0, note:"Cleaning and AI-assisted coding of audio recordings: word count, MLU, vocabulary diversity, conversational turns. Linkage to SIAGIE and ECE administrative records." },
+    { phase:"Data Collection", label:"Audio processing and AI coding", start:"2026-11-02", end:"2027-04-30", color:"data", pct:0, note:"Cleaning and AI-assisted coding of audio recordings: word count, MLU, vocabulary diversity, conversational turns." },
 
-    { phase:"Long-run Follow-up", label:"ECE Grade 2 data (language and math)", start:"2027-03-01", end:"2027-12-31", color:"follow", pct:0, note:"Evaluacion Censal de Estudiantes (ECE). Long-run outcomes in language and mathematics." },
-    { phase:"Long-run Follow-up", label:"SIAGIE data (enrollment and grade progression)", start:"2027-03-01", end:"2030-12-31", color:"follow", pct:0, note:"Ministry of Education school information system. Tracks enrollment, grade progression, and dropout 2027-2030." },
+    { phase:"Long-run Follow-up", label:"Admin data collection and analysis", start:"2027-03-01", end:"2030-12-31", color:"follow", pct:0, note:"Unified administrative records: ECE (Evaluacion Censal de Estudiantes) language and math outcomes, and SIAGIE enrollment, grade progression, and dropout. Collected and analyzed from 2027 onward (through 2030)." },
     { phase:"Long-run Follow-up", label:"Analysis and results dissemination", start:"2027-06-01", end:"2027-12-31", color:"follow", pct:0, note:"UChicago shares evaluation results and Chat2Learn learnings with Fe y Alegria and partners." }
   ];
 
@@ -306,18 +321,21 @@ function renderMonthly(opts){
   var FOOTNOTES = [
     "<span class='risk-note'>IRB (binding constraint):</span> UChicago and local IEP approvals are targeted for the beginning of the second week of July. UChicago approval is contingent on local IEP approval. This is the binding constraint for randomization and program launch.",
     "<strong>Data cleaning:</strong> Digitization of paper consent forms continues through mid-July, in parallel with the start of randomization.",
+    "<strong>Data collection instruments:</strong> Audio tasks and the phone survey are developed and piloted before the midline. A survey firm would be hired and trained only if caregiver outcomes are collected by phone (placeholder, mode to be confirmed).",
     "<span class='fund-note'>Funding ($110k conditional):</span> Doneer Effectief confirms $188k non-conditional for Jan 2026-Jun 2027. A further $110k could be allocated to C2L tied to a usage study, decided any time late Aug-Dec 2026. Part of those funds could instead support a larger MIDIS data collection.",
-    "<strong>Two-wave data collection:</strong> Midline (end of school year, Oct-Dec 2026) captures effects within the school year. Endline (Jan-Mar 2027) tests post-summer outcomes. The school break is a theoretically strong treatment period as the counterfactual for control children is minimal stimulation."
+    "<strong>Two-wave data collection:</strong> Midline (end of school year, Oct-Dec 2026) captures effects within the school year. Endline (Jan-Mar 2027) tests post-summer outcomes. The school break is a theoretically strong treatment period as the counterfactual for control children is minimal stimulation.",
+    "<strong>Administrative data:</strong> ECE and SIAGIE records are tracked and analyzed from 2027 through 2030. The timeline collapses everything after 2027 into a single \"2028 onward\" column."
   ];
 
   var SUMMARY_WS = [
     { label:"Preparation", color:"prep", start:"2026-02-02", end:"2026-07-17" },
     { label:"IRB reviews", color:"irb", start:"2026-05-04", end:"2026-07-08" },
     { label:"Chat2Learn implementation", color:"impl", start:"2026-07-20", end:"2027-01-31" },
+    { label:"Instrument prep & survey setup", color:"data", start:"2026-08-03", end:"2026-09-30" },
     { label:"Midline data collection", color:"data", start:"2026-10-05", end:"2026-12-18" },
     { label:"Endline data collection", color:"data", start:"2027-01-05", end:"2027-03-15" },
     { label:"Audio processing & AI coding", color:"data", start:"2026-11-02", end:"2027-04-30" },
-    { label:"Long-run follow-up (ECE/SIAGIE)", color:"follow", start:"2027-03-01", end:"2030-12-31" },
+    { label:"Admin data collection and analysis", color:"follow", start:"2027-03-01", end:"2030-12-31" },
     { label:"Analysis & dissemination", color:"follow", start:"2027-06-01", end:"2027-12-31" }
   ];
   var SUMMARY_MS = [
@@ -330,44 +348,49 @@ function renderMonthly(opts){
     { date:"2027-01-31", label:"Pgm end",   done:false, risk:false }
   ];
 
-  var TSTART=new Date("2026-02-02"), TEND=new Date("2030-12-31");
-  function buildWeeks(){ var w=[],cur=mondayOf(TSTART); while(cur<=TEND){ w.push(new Date(cur)); cur=addDays(cur,7);} return w; }
+  var TSTART=new Date("2026-02-02T00:00:00");
+  var hasTail=true; // admin row runs to 2030
+  function buildWeeks(){ var w=[],cur=mondayOf(TSTART); while(cur<=AXIS_END){ w.push(new Date(cur)); cur=addDays(cur,7);} return w; }
   function buildMonths(weeks){ var m=[],cur=null; for(var i=0;i<weeks.length;i++){var wk=weeks[i];var key=wk.getFullYear()+"-"+wk.getMonth();if(!cur||cur.key!==key){cur={key:key,year:wk.getFullYear(),month:wk.getMonth(),count:0};m.push(cur);}cur.count++;} return m; }
-  function weekIdx(weeks,d){ var t=d.getTime(); for(var i=0;i<weeks.length;i++){ if(t<addDays(weeks[i],7).getTime()) return i;} return weeks.length-1; }
+  function weekIdx(weeks,d){ if(d>AXIS_END) return weeks.length; var t=d.getTime(); for(var i=0;i<weeks.length;i++){ if(t<addDays(weeks[i],7).getTime()) return i;} return weeks.length-1; }
 
   function buildDetailed(){
-    var weeks=buildWeeks(), months=buildMonths(weeks), W=weeks.length;
-    var today=new Date(); var curWeek=(today>=TSTART && today<=TEND)?weekIdx(weeks,today):-1;
+    var weeks=buildWeeks(), months=buildMonths(weeks), W=weeks.length, COLS=W+1;
+    var today=new Date(); var curWeek=(today>=TSTART && today<=AXIS_END)?weekIdx(weeks,today):-1;
     var phases=[],phaseMap={};
     for (var i=0;i<TASKS.length;i++){ var t=TASKS[i]; if(!phaseMap[t.phase]){phaseMap[t.phase]=[];phases.push(t.phase);} phaseMap[t.phase].push(t); }
 
     var html="<div class='chart-inner'><table><thead><tr><th class='task-col' rowspan='2'>Task</th>";
     for (var m=0;m<months.length;m++){ var mo=months[m]; html += "<th colspan='"+mo.count+"' class='month-group month-divider'>"+MONTH_NAMES[mo.month]+" "+mo.year+"</th>"; }
+    html += "<th class='month-group tail-head'>"+TAIL_YEAR_LABEL+"</th>";
     html += "</tr><tr>";
     for (var wi=0;wi<W;wi++){ var wk=weeks[wi]; var isFirst=(wk.getDate()<=7)||(wi===0); var c=isFirst?"week-header month-divider":"week-header"; if(wi===curWeek){ html += "<th class='"+c+" cur-col' id='int-curcol'>"+wk.getDate()+"</th>"; } else { html += "<th class='"+c+"'>"+wk.getDate()+"</th>"; } }
+    html += "<th class='week-header tail-head' style='min-width:64px'>"+TAIL_CELL_LABEL+"</th>";
     html += "</tr></thead><tbody>";
 
     var msByWeek={};
     for (var mi=0;mi<MILESTONES.length;mi++){ var ms=MILESTONES[mi]; var mwi=weekIdx(weeks,parseDate(ms.date)); if(!msByWeek[mwi])msByWeek[mwi]=[]; msByWeek[mwi].push(ms); }
     html += "<tr style='background:#fafbfc'><td class='task-col' style='font-size:10px;font-weight:600;color:#888;font-style:italic'>Milestones</td>";
-    for (var wi=0;wi<W;wi++){
+    for (var wi=0;wi<COLS;wi++){
+      var tailC=(wi===W)?" tail-cell":"";
       var secTint = (wi===curWeek) ? "background:#efd6d6;" : "";
+      var mwStyle = (wi===W) ? "min-width:64px;" : "";
       if (msByWeek[wi]){
         var ms=msByWeek[wi][0];
         var dcolor = ms.fund ? "#E8830C" : (ms.risk ? "#e74c3c" : MAROON);
         var dop = ms.done ? "opacity:.4;" : "";
         var tip = "<strong>"+ms.label+"</strong><br>"+ms.tip;
-        html += "<td class='milestone-cell' style='"+secTint+"'><div class='diamond' style='background:"+dcolor+";"+dop+"' onmouseenter='showTip(event,\""+tip.replace(/"/g,"&quot;")+"\")' onmouseleave='hideTip()'></div></td>";
-      } else { html += "<td class='cell' style='"+secTint+"'></td>"; }
+        html += "<td class='milestone-cell"+tailC+"' style='"+mwStyle+secTint+"'><div class='diamond' style='background:"+dcolor+";"+dop+"' onmouseenter='showTip(event,\""+tip.replace(/"/g,"&quot;")+"\")' onmouseleave='hideTip()'></div></td>";
+      } else { html += "<td class='cell"+tailC+"' style='"+mwStyle+secTint+"'></td>"; }
     }
     html += "</tr>";
 
     for (var pi=0;pi<phases.length;pi++){
       var pname=phases[pi], ptasks=phaseMap[pname];
-      html += "<tr><td colspan='"+(W+1)+"' class='phase-label'>"+pname.toUpperCase()+"</td></tr>";
+      html += "<tr><td colspan='"+(COLS+1)+"' class='phase-label'>"+pname.toUpperCase()+"</td></tr>";
       for (var ti=0;ti<ptasks.length;ti++){
         var task=ptasks[ti], col=COL[task.color];
-        var si=clamp(weekIdx(weeks,parseDate(task.start)),0,W-1), ei=clamp(weekIdx(weeks,parseDate(task.end)),0,W-1), span=ei-si+1;
+        var si=clamp(weekIdx(weeks,parseDate(task.start)),0,W), ei=clamp(weekIdx(weeks,parseDate(task.end)),0,W), span=ei-si+1;
         var isDone=task.pct===100, hasNote=task.note&&task.note.length>0;
         var taskLabel=(isDone?"<span class='check'>✓</span>":"")+task.label+(hasNote?"<span class='asterisk'>*</span>":"");
         var nameClass=isDone?"task-name done":"task-name";
@@ -375,9 +398,11 @@ function renderMonthly(opts){
         html += "<tr><td class='task-col'><div class='"+nameClass+"' title='"+task.label+"'";
         if (ttext) html += " onmouseenter='showTip(event,\""+ttext.replace(/\n/g,"").replace(/"/g,"&quot;")+"\")' onmouseleave='hideTip()'";
         html += ">"+taskLabel+"</div></td>";
-        for (var wi=0;wi<W;wi++){
+        for (var wi=0;wi<COLS;wi++){
+          var tailC=(wi===W)?" tail-cell":"";
+          var mwStyle=(wi===W)?"min-width:64px;":"";
           if (wi===si){
-            html += "<td class='cell' colspan='"+span+"' style='position:relative'>";
+            html += "<td class='cell"+tailC+"' colspan='"+span+"' style='position:relative;"+mwStyle+"'>";
             if (task.pct!==undefined&&task.pct>0&&task.pct<100){
               html += "<div style='position:absolute;top:6px;height:22px;left:0;width:100%;border-radius:4px;background:"+rgba(col.s,0.15)+";z-index:1'></div>";
               html += "<div style='position:absolute;top:6px;height:22px;left:0;width:"+task.pct+"%;border-radius:4px;background:"+col.s+";z-index:2'></div>";
@@ -388,7 +413,7 @@ function renderMonthly(opts){
             }
             html += "</td>";
             wi += span-1;
-          } else { html += "<td class='cell'></td>"; }
+          } else { html += "<td class='cell"+tailC+"' style='"+mwStyle+"'></td>"; }
         }
         html += "</tr>";
       }
@@ -399,33 +424,39 @@ function renderMonthly(opts){
   }
 
   function buildSummary(){
-    var allMonths=[], cur=new Date(TSTART.getFullYear(),TSTART.getMonth(),1), endM=new Date(TEND.getFullYear(),TEND.getMonth(),1);
+    var allMonths=[], cur=new Date(TSTART.getFullYear(),TSTART.getMonth(),1), endM=new Date(AXIS_END.getFullYear(),AXIS_END.getMonth(),1);
     while (cur<=endM){ allMonths.push(new Date(cur)); cur=new Date(cur.getFullYear(),cur.getMonth()+1,1); }
-    var M=allMonths.length;
-    function monthIdxOf(d){ var pd=(typeof d==="string")?parseDate(d):d; for(var i=0;i<allMonths.length;i++){var nm=new Date(allMonths[i].getFullYear(),allMonths[i].getMonth()+1,1); if(pd<nm) return i;} return M-1; }
-    var today=new Date(); var curMonth=(today>=TSTART && today<=TEND)?monthIdxOf(today):-1;
+    var M=allMonths.length, COLS=M+1;
+    function monthIdxOf(d){ var pd=(typeof d==="string")?parseDate(d):d; if(pd>AXIS_END) return M; for(var i=0;i<M;i++){var nm=new Date(allMonths[i].getFullYear(),allMonths[i].getMonth()+1,1); if(pd<nm) return i;} return M-1; }
+    var today=new Date(); var curMonth=(today>=TSTART && today<=AXIS_END)?monthIdxOf(today):-1;
     var years=[],yearMap={};
     for (var i=0;i<allMonths.length;i++){ var y=allMonths[i].getFullYear(); if(!yearMap[y]){yearMap[y]=0;years.push(y);} yearMap[y]++; }
     var html="<div class='chart-inner'><table><thead><tr><th class='task-col'>Workstream</th>";
     for (var yi=0;yi<years.length;yi++){ html += "<th colspan='"+yearMap[years[yi]]+"' class='month-group month-divider'>"+years[yi]+"</th>"; }
+    html += "<th class='month-group tail-head'>"+TAIL_YEAR_LABEL+"</th>";
     html += "</tr><tr><th class='task-col'></th>";
     for (var mi=0;mi<M;mi++){ var cls=allMonths[mi].getMonth()===0?"month-header month-divider":"month-header"; if(mi===curMonth){ html += "<th class='"+cls+" cur-col' id='int-sum-curcol' style='min-width:32px'>"+MONTH_NAMES[allMonths[mi].getMonth()]+"</th>"; } else { html += "<th class='"+cls+"' style='min-width:32px'>"+MONTH_NAMES[allMonths[mi].getMonth()]+"</th>"; } }
+    html += "<th class='month-header tail-head' style='min-width:64px'>"+TAIL_CELL_LABEL+"</th>";
     html += "</tr></thead><tbody>";
     var msByMonth={};
     for (var k=0;k<SUMMARY_MS.length;k++){ var ms=SUMMARY_MS[k]; var idx=monthIdxOf(parseDate(ms.date)); if(!msByMonth[idx])msByMonth[idx]=[]; msByMonth[idx].push(ms); }
     html += "<tr style='background:#fafbfc'><td class='task-col' style='font-size:10px;color:#888;font-style:italic'>Milestones</td>";
-    for (var mi=0;mi<M;mi++){
+    for (var mi=0;mi<COLS;mi++){
+      var tailC=(mi===M)?" tail-cell":"";
+      var mwStyle=(mi===M)?"min-width:64px;":"min-width:32px;";
       var secTint=(mi===curMonth)?"background:#efd6d6;":"";
-      if (msByMonth[mi]){ var ms=msByMonth[mi][0]; var dc=ms.fund?"#E8830C":(ms.risk?"#e74c3c":MAROON); var dop=ms.done?"opacity:.4;":""; html += "<td class='milestone-cell' style='min-width:32px;"+secTint+"'><div class='diamond' style='background:"+dc+";"+dop+"'></div></td>"; }
-      else { html += "<td class='cell' style='min-width:32px;"+secTint+"'></td>"; }
+      if (msByMonth[mi]){ var ms=msByMonth[mi][0]; var dc=ms.fund?"#E8830C":(ms.risk?"#e74c3c":MAROON); var dop=ms.done?"opacity:.4;":""; html += "<td class='milestone-cell"+tailC+"' style='"+mwStyle+secTint+"'><div class='diamond' style='background:"+dc+";"+dop+"'></div></td>"; }
+      else { html += "<td class='cell"+tailC+"' style='"+mwStyle+secTint+"'></td>"; }
     }
     html += "</tr>";
     for (var wi=0;wi<SUMMARY_WS.length;wi++){
       var ws=SUMMARY_WS[wi], col=COL[ws.color], si=monthIdxOf(parseDate(ws.start)), ei=monthIdxOf(parseDate(ws.end)), span=ei-si+1;
       html += "<tr><td class='task-col'><div class='task-name'>"+ws.label+"</div></td>";
-      for (var mi=0;mi<M;mi++){
-        if (mi===si){ html += "<td class='cell' colspan='"+span+"' style='position:relative;min-width:32px'><div class='bar' style='left:0;width:100%;background:"+col.s+"'></div></td>"; mi += span-1; }
-        else { html += "<td class='cell' style='min-width:32px'></td>"; }
+      for (var mi=0;mi<COLS;mi++){
+        var tailC=(mi===M)?" tail-cell":"";
+        var mwStyle=(mi===M)?"min-width:64px;":"min-width:32px;";
+        if (mi===si){ html += "<td class='cell"+tailC+"' colspan='"+span+"' style='position:relative;"+mwStyle+"'><div class='bar' style='left:0;width:100%;background:"+col.s+"'></div></td>"; mi += span-1; }
+        else { html += "<td class='cell"+tailC+"' style='"+mwStyle+"'></td>"; }
       }
       html += "</tr>";
     }
@@ -467,11 +498,11 @@ renderMonthly({
     { phase:"Preparation", label:"Pre-registration & randomization", start:"2026-05-18", end:"2026-07-17", color:"prep", tip:"Study pre-registration, consent data preparation, and random assignment to treatment and control. Stratified by school, child age, and caregiver education." },
     { phase:"Implementation", label:"Chat2Learn program (treatment group)", start:"2026-07-20", end:"2027-01-31", color:"impl", tip:"~6 months of Chat2Learn via WhatsApp. Up to 5 illustrated prompts per week to caregivers of children aged 3-6. Control group: business as usual." },
     { phase:"Implementation", label:"Engagement data collection",           start:"2026-07-20", end:"2027-01-31", color:"impl", tip:"Continuous tracking of platform engagement: message delivery rates, read rates, response rates, and session frequency." },
+    { phase:"Data Collection", label:"Instrument development & piloting", start:"2026-08-03", end:"2026-09-30", color:"data", tip:"Design and pilot the audio elicitation tasks and the phone survey instruments, including cognitive testing and field piloting before the midline." },
     { phase:"Data Collection", label:"Midline data collection",  start:"2026-10-05", end:"2026-12-18", color:"data", tip:"First data collection wave (end of school year). WhatsApp audio tasks eliciting child language samples and caregiver-child conversation recordings. Phone survey on parental beliefs, self-efficacy, and willingness to pay (BDM mechanism)." },
     { phase:"Data Collection", label:"Endline data collection",  start:"2027-01-05", end:"2027-03-15", color:"data", tip:"Second data collection wave (post-summer break). Captures post-summer outcomes to assess whether the program mitigates the summer learning slide. Same instruments as midline." },
-    { phase:"Data Collection", label:"Data processing & coding", start:"2026-11-02", end:"2027-04-30", color:"data", tip:"AI-assisted coding of audio recordings: word count, mean length of utterance (MLU), vocabulary diversity, conversational turns. Linkage to ECE and SIAGIE administrative records." },
-    { phase:"Long-run Follow-up", label:"ECE assessments (Grade 2+)",          start:"2027-03-01", end:"2027-12-31", color:"follow", tip:"National standardized assessment (ECE) outcomes in language and mathematics." },
-    { phase:"Long-run Follow-up", label:"SIAGIE administrative data (2027-30)", start:"2027-03-01", end:"2030-12-31", color:"follow", tip:"Ministry of Education school information system. Tracks enrollment, grade progression, and school dropout through 2030." },
+    { phase:"Data Collection", label:"Data processing & coding", start:"2026-11-02", end:"2027-04-30", color:"data", tip:"AI-assisted coding of audio recordings: word count, mean length of utterance (MLU), vocabulary diversity, conversational turns." },
+    { phase:"Long-run Follow-up", label:"Admin data collection and analysis", start:"2027-03-01", end:"2030-12-31", color:"follow", tip:"Administrative records: ECE (Evaluacion Censal de Estudiantes) language and math outcomes, and SIAGIE enrollment, grade progression, and dropout. Collected and analyzed from 2027 through 2030." },
     { phase:"Long-run Follow-up", label:"Results dissemination",                start:"2027-06-01", end:"2027-12-31", color:"follow", tip:"Evaluation findings shared with Fe y Alegria, policymakers, and the research community." }
   ],
   milestones:[
@@ -486,7 +517,7 @@ renderMonthly({
   footnotes:[
     "<strong>Study design:</strong> Randomized controlled trial. 50/50 assignment to treatment (Chat2Learn) and control (business as usual). Stratified by school, child age group (3, 4, or 5 years), and caregiver education. All enrolled caregivers per treated child receive Chat2Learn messages.",
     "<strong>Two-wave data collection:</strong> The midline (Oct-Dec 2026) captures end-of-school-year effects. The endline (Jan-Mar 2027) captures post-summer outcomes. The school break is a period of minimal counterfactual stimulation for control children, which may yield the largest treatment effects.",
-    "<strong>Long-run outcomes:</strong> Children's language and mathematics outcomes tracked through the Evaluacion Censal de Estudiantes (ECE). School enrollment and grade progression tracked through SIAGIE (Ministry of Education) through 2030."
+    "<strong>Long-run outcomes:</strong> Language and math outcomes (ECE) and enrollment and grade progression (SIAGIE) are tracked and analyzed from 2027 through 2030. The timeline collapses everything after 2027 into a single \"2028 onward\" column."
   ]
 });
 
