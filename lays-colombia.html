@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LAYS Math Item Bank Pilot — Colombia</title>
+<style>
+  :root{
+    --maroon:#800000;
+    --gold:#E8830C;
+    --charcoal:#33334D;
+    --teal:#1AA179;
+    --blue:#2F6DB5;
+    --purple:#7B4FA3;
+  }
+  *{box-sizing:border-box;}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:#fff;color:#222;margin:0;padding:24px 28px;
+  }
+  h1{font-size:22px;margin:0 0 4px 0;color:var(--charcoal);}
+  .subtitle{font-size:13px;color:#666;margin:0 0 14px 0;line-height:1.5;}
+  .legend{
+    display:flex;flex-wrap:wrap;gap:14px;align-items:center;
+    font-size:12px;color:#444;margin-bottom:12px;
+  }
+  .legend .item{display:flex;align-items:center;gap:5px;}
+  .swatch{width:14px;height:10px;border-radius:2px;display:inline-block;}
+  .diamond-key{
+    width:9px;height:9px;background:var(--maroon);
+    transform:rotate(45deg);display:inline-block;
+  }
+  .chart-wrap{
+    max-height:72vh;overflow:auto;border:1px solid #e3e3e3;border-radius:6px;
+  }
+  table{border-collapse:separate;border-spacing:0;font-size:12px;}
+  th,td{padding:0;margin:0;}
+
+  /* header rows */
+  thead th{position:sticky;background:#fff;z-index:5;}
+  thead tr.months th{top:0;height:26px;font-size:12px;font-weight:600;
+    color:var(--charcoal);border-bottom:1px solid #ddd;border-right:1px solid #e6e6e6;}
+  thead tr.weeks th{top:26px;height:22px;font-size:10.5px;font-weight:500;
+    color:#888;border-bottom:1px solid #ccc;border-right:1px solid #f0f0f0;}
+  thead tr.weeks th.cur{
+    background:var(--maroon);color:#fff;font-weight:700;
+  }
+  /* corner cells */
+  thead th.corner{left:0;z-index:8;background:transparent;}
+
+  /* label column */
+  td.label{
+    position:sticky;left:0;background:#fff;z-index:4;
+    min-width:230px;max-width:230px;width:230px;
+    padding:4px 10px 4px 6px;border-right:1px solid #ddd;border-bottom:1px solid #f2f2f2;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  }
+  tr.section td.label{
+    font-weight:700;color:var(--charcoal);background:#f4f4f6;
+    border-bottom:1px solid #e0e0e0;padding-top:7px;padding-bottom:7px;
+  }
+  /* grid cells */
+  td.wk{
+    width:30px;min-width:30px;max-width:30px;height:30px;
+    border-right:1px solid #f4f4f4;border-bottom:1px solid #f7f7f7;
+    position:relative;
+  }
+  td.wk.mend{border-right:1px solid #e2e2e2;}
+  td.wk.cur{background:rgba(128,0,0,0.10);}
+  tr.section td.wk{background:#f4f4f6;height:26px;}
+  tr.section td.wk.cur{background:#efd6d6;}
+
+  .bar{
+    position:absolute;top:50%;left:2px;transform:translateY(-50%);
+    height:16px;border-radius:3px;z-index:1;
+  }
+  .diamond{
+    position:absolute;top:50%;left:50%;
+    width:11px;height:11px;background:var(--maroon);
+    transform:translate(-50%,-50%) rotate(45deg);z-index:2;
+  }
+
+</style>
+</head>
+<body>
+
+<h1>LAYS Math Item Bank Pilot — Colombia</h1>
+<p class="subtitle">
+  Global item bank piloting for LAYS · DIL at UChicago, CGD, and J-PAL LAI ·
+  Team: Pablo Ramos, Shardul Oza, Julia Eigner, Tomás Buitrago (DIL); Maleeha Hameed (CGD)<br>
+  15 schools · ~2,250 students · grades 1–5 · Bogotá or Medellín + rural municipalities ·
+  <b>Updated: July 20, 2026, 8:05 PM (-05)</b>
+</p>
+
+<div class="legend" id="legend"></div>
+
+<div class="chart-wrap">
+  <table id="gantt"></table>
+</div>
+
+<script>
+// ---- Timeline config: Jul 2026 – Dec 2026, 4 weeks per month ----
+const START_YEAR = 2026;
+const START_MONTH_INDEX = 6; // July
+const MONTHS = ["Jul 2026","Aug 2026","Sep 2026","Oct 2026","Nov 2026","Dec 2026"];
+const TOTAL_WEEKS = MONTHS.length * 4;
+
+// ---- Editable task data ----
+// start/end are 0-based week indices (Jul wk1 = 0 ... Dec wk4 = 23)
+const SECTIONS = [
+  {
+    name: "Contracting & setup", color: "var(--gold)",
+    tasks: [
+      {name:"Final pilot package from CGD", start:3, end:3, milestone:true},
+      {name:"J-PAL LAI contract (Malawi + Colombia)", start:3, end:8},
+      {name:"iQuartil subcontract", start:5, end:9}
+    ]
+  },
+  {
+    name: "IRB & approvals", color: "var(--charcoal)",
+    tasks: [
+      {name:"IRB applications (UChicago + local)", start:4, end:11},
+      {name:"Secretaría de Educación engagement", start:5, end:11}
+    ]
+  },
+  {
+    name: "Field preparation", color: "var(--teal)",
+    tasks: [
+      {name:"Instrument adaptation & translation", start:4, end:6},
+      {name:"School sampling & characterization", start:8, end:11},
+      {name:"Programming digital forms", start:9, end:11},
+      {name:"Printing & field logistics", start:10, end:12},
+      {name:"School coordination & consents", start:10, end:13},
+      {name:"Enumerator training", start:13, end:13}
+    ]
+  },
+  {
+    name: "Data collection", color: "var(--blue)",
+    tasks: [
+      {name:"Fieldwork: 15 schools, ~2,250 students", start:14, end:18},
+      {name:"Fieldwork complete", start:18, end:18, milestone:true}
+    ]
+  },
+  {
+    name: "Data & closeout", color: "var(--purple)",
+    tasks: [
+      {name:"Data entry & spot checks", start:15, end:19},
+      {name:"Data cleaning & final datasets", start:19, end:21},
+      {name:"Final deliverables & closeout", start:21, end:21, milestone:true}
+    ]
+  }
+];
+
+// ---- Current week (computed from real date on every open) ----
+function currentWeekIndex(){
+  const now = new Date();
+  const mi = (now.getFullYear() - START_YEAR) * 12 + (now.getMonth() - START_MONTH_INDEX);
+  const wk = Math.min(4, Math.ceil(now.getDate() / 7));
+  const idx = mi * 4 + (wk - 1);
+  return (idx >= 0 && idx < TOTAL_WEEKS) ? idx : -1;
+}
+const CUR = currentWeekIndex();
+const CELL_W = 30;
+
+// ---- Legend ----
+const legend = document.getElementById("legend");
+let lg = "";
+SECTIONS.forEach(s => {
+  lg += `<span class="item"><span class="swatch" style="background:${s.color}"></span>${s.name}</span>`;
+});
+lg += `<span class="item"><span class="swatch" style="background:rgba(128,0,0,0.35)"></span>Current week</span>`;
+lg += `<span class="item"><span class="diamond-key"></span>&nbsp;Milestone</span>`;
+lg += `<span class="item">✓ Completed task</span>`;
+legend.innerHTML = lg;
+
+// ---- Table ----
+const table = document.getElementById("gantt");
+let html = "<thead>";
+html += '<tr class="months"><th class="corner"></th>';
+MONTHS.forEach(m => { html += `<th colspan="4">${m}</th>`; });
+html += "</tr>";
+html += '<tr class="weeks"><th class="corner"></th>';
+for(let i = 0; i < TOTAL_WEEKS; i++){
+  html += `<th class="${i === CUR ? "cur" : ""}">${(i % 4) + 1}</th>`;
+}
+html += "</tr></thead><tbody>";
+
+SECTIONS.forEach((s, si) => {
+  html += `<tr class="section"><td class="label">${s.name}</td>`;
+  for(let i = 0; i < TOTAL_WEEKS; i++){
+    html += `<td class="wk${i % 4 === 3 ? " mend" : ""}${i === CUR ? " cur" : ""}"></td>`;
+  }
+  html += "</tr>";
+  s.tasks.forEach((t, ti) => {
+    const done = t.pct === 100;
+    const check = done ? "✓ " : "";
+    const nameStyle = done ? ' style="color:#999"' : "";
+    html += `<tr class="task" data-s="${si}" data-t="${ti}">`;
+    html += `<td class="label"${nameStyle}>${check}${t.name}</td>`;
+    for(let i = 0; i < TOTAL_WEEKS; i++){
+      let inner = "";
+      if(t.milestone && i === t.start){
+        inner = `<div class="diamond"${done ? ' style="opacity:0.4"' : ""}></div>`;
+      } else if(!t.milestone && i === t.start){
+        const span = t.end - t.start + 1;
+        inner = `<div class="bar" style="width:${span * CELL_W - 6}px;background:${s.color}"></div>`;
+      }
+      html += `<td class="wk${i % 4 === 3 ? " mend" : ""}${i === CUR ? " cur" : ""}">${inner}</td>`;
+    }
+    html += "</tr>";
+  });
+});
+html += "</tbody>";
+table.innerHTML = html;
+</script>
+</body>
+</html>
