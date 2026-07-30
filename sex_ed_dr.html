@@ -60,7 +60,7 @@
 
 <div class="header">
   <h1>Testing a Behavioral Intervention to Reduce Teenage Pregnancy — Dominican Republic</h1>
-  <p>PIs: Carolina Concha-Arriagada, Guthrie Gray-Lobe, Nina Buchmann, Sebastian Otero, Michael Kremer &nbsp;|&nbsp; Updated: June 30, 2026</p>
+  <p>PIs: Carolina Concha-Arriagada, Guthrie Gray-Lobe, Nina Buchmann, Sebastian Otero, Michael Kremer &nbsp;|&nbsp; Updated: July 29, 2026, 11:55 PM (-05)</p>
 </div>
 
 <div class="toggle-bar">
@@ -94,12 +94,11 @@
 </div>
 
 <div class="footnotes">
-  <h3>Key constraints &amp; notes (updated June 30, 2026)</h3>
+  <h3>Key constraints &amp; notes (updated July 29, 2026, 11:55 PM)</h3>
   <ul>
-    <li>TOR published May w3 (May 19, 2026). Proposal deadline was June 4. Consultant selection runs through Jul w1; signing and downstream phases begin Jul w2.</li>
-    <li>Carolina–MINERD meeting took place Jun w3. Green light for IRB drafting (starts Jun w4) and chatbot contracting.</li>
-    <li>IRB drafting starts Jun w4 and ends Jul w4, the week before review begins; target submission start of August; target approval end of September (~2 months review).</li>
-    <li>Chatbot phases: contracting + P1 audit Jul w2–w3 · P2 build+QA Jul w4–Aug w3 · pilot Aug w4–Sep w1 · P3 integration Sep w2–w3 · P4 full launch can occur the same day as IRB approval (end of September). Phase 5 support through Dec 15, 2026.</li>
+    <li>Consultant firm selected. Contract not yet signed as of Jul 29; signing may take ~1.5 months (targeting mid-September). The firm starts chatbot work in parallel ~2 weeks out (Aug w2), before signing.</li>
+    <li>IRB draft not started as of Jul 29. Drafting starts now (Jul w4), submission end of August, at least one month of review, approval targeted end of September (Sep w4), just before the program start.</li>
+    <li>Chatbot work compressed so the platform is ready before the program start: P1 audit Aug w2–w3 · P2 build+QA Aug w4–Sep w1 · pilot Sep w2 · P3 integration Sep w3 · P4 full launch Sep w4 (before October program start, coincides with IRB approval). Phase 5 support through Dec 15, 2026.</li>
     <li>No baseline survey in this timeline. Data collection begins at midline (May 2027), preceded by instrument development, programming, and enumerator training (Mar–Apr 2027).</li>
     <li>Endline data collection is in 2028, beyond this chart.</li>
     <li>MINERD confirmed the CSE program will not start before October — first weeks of the school year are orientation with no regular classes. School year opens September; program delivery starts Oct w1.</li>
@@ -168,24 +167,24 @@ const SECTIONS = [
         note: 'Held Jun w3. Green light for IRB drafting and chatbot contracting.'
       },
       {
-        name: 'IRB protocol drafting', start: w(1,4), end: w(2,4),
+        name: 'IRB protocol drafting', start: w(2,4), end: w(3,3),
         pct: 0,
-        note: 'Starts Jun w4 after MINERD meeting confirmed. Ends Jul w4, the week before review begins. Target submission: Aug w1.'
+        note: 'Not started as of Jul 29. Starts now (Jul w4), runs ~4 weeks through Aug w3.'
       },
       {
-        name: 'IRB submission', start: w(3,1), end: w(3,1),
+        name: 'IRB submission', start: w(3,4), end: w(3,4),
         milestone: true, pct: 0,
-        note: 'Target: start of August.'
+        note: 'Target: end of August (Aug w4).'
       },
       {
-        name: 'IRB review period', start: w(3,1), end: w(4,4),
+        name: 'IRB review period', start: w(3,4), end: w(4,4),
         pct: 0,
-        note: '~2 months review. Target approval: end of September.'
+        note: 'At least one month for review. Target approval: end of September, before program start.'
       },
       {
         name: 'IRB approval', start: w(4,4), end: w(4,4),
         milestone: true, pct: 0,
-        note: 'Target: end of September / start of October.'
+        note: 'Target: end of September (Sep w4), just before the program start in October. At least one month of review before this point.'
       },
     ]
   },
@@ -199,38 +198,38 @@ const SECTIONS = [
       },
       {
         name: 'Proposal review & selection', start: w(1,1), end: w(2,1),
-        pct: 0,
-        note: 'Proposals received by Jun 4. First contact with likely consultant via comments: Jun w4. Selection finalized Jul w1.'
+        pct: 100,
+        note: 'Firm selected. Done.'
       },
       {
-        name: 'Consultant contracting', start: w(2,2), end: w(2,3),
+        name: 'Consultant contracting', start: w(2,4), end: w(4,2),
         pct: 0,
-        note: 'Signing process starts Jul w2, the week after selection. ~1.5 weeks.'
+        note: 'Firm selected; contract not yet signed as of Jul 29. Signing may take ~1.5 months, targeting mid-September. The firm starts chatbot work in parallel ~2 weeks out, before signing.'
       },
       {
-        name: 'P1: Platform audit & spec', start: w(2,2), end: w(2,3),
+        name: 'P1: Platform audit & spec', start: w(3,2), end: w(3,3),
         pct: 0,
-        note: 'Phase 1: Audit actividadesesienvalores.com.do and produce technical spec. Jul w2–w3.'
+        note: 'Phase 1: Audit actividadesesienvalores.com.do and produce technical spec. Firm starts ~2 weeks out (Aug w2), before contract signing. Aug w2–w3.'
       },
       {
-        name: 'P2: Chatbot build + QA', start: w(2,4), end: w(3,3),
+        name: 'P2: Chatbot build + QA', start: w(3,4), end: w(4,1),
         pct: 0,
-        note: 'Phase 2: Build claude-haiku-4-5 chatbot standalone, QA testing. Jul w4–Aug w3.'
+        note: 'Phase 2: Build claude-haiku-4-5 chatbot standalone, QA testing. Compressed. Aug w4–Sep w1.'
       },
       {
-        name: 'Pilot test', start: w(3,4), end: w(4,1),
+        name: 'Pilot test', start: w(4,2), end: w(4,2),
         pct: 0,
-        note: 'Pilot with small user group. Aug w4–Sep w1.'
+        note: 'Pilot with small user group. Sep w2.'
       },
       {
-        name: 'P3: Platform integration', start: w(4,2), end: w(4,3),
+        name: 'P3: Platform integration', start: w(4,3), end: w(4,3),
         pct: 0,
-        note: 'Phase 3: Integrate chatbot into WordPress/EduBin platform. Sep w2–w3.'
+        note: 'Phase 3: Integrate chatbot into WordPress/EduBin platform. Sep w3.'
       },
       {
         name: 'P4: Full launch', start: w(4,4), end: w(4,4),
         milestone: true, pct: 0,
-        note: 'Phase 4: Public launch on actividadesesienvalores.com.do. Can happen the same day as IRB approval (end of September).'
+        note: 'Phase 4: Public launch on actividadesesienvalores.com.do. Target end of September (Sep w4), before the program start in October. Coincides with IRB approval.'
       },
       {
         name: 'P5: Support & maintenance', start: w(4,4), end: w(7,3),
